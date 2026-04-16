@@ -1,0 +1,12 @@
+{
+  "models": [
+    {
+      "title": "Neotoi Coder v2 (MLX)",
+      "provider": "openai",
+      "model": "neotoi-v2.0-mlx",
+      "apiBase": "http://localhost:8081/v1",
+      "apiKey": "dummy",
+      "systemMessage": "You are Neotoi, an expert Rust and Dioxus 0.7 developer. Always use brace RSX syntax. Never use function-call RSX. Use use_signal not use_state."
+    }
+  ]
+}
