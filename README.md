@@ -3,7 +3,7 @@
 A Rust/Dioxus 0.7 specialist LLM — 96.8% on a 100-question weighted exam.
 
 **[HuggingFace — Download GGUF + MLX](https://huggingface.co/rockypod/neotoi-coder)**
-**[Read the full build story](https://rockypod.com/blog/neotoi-coder-v2-release)**
+**[Read the whole story on RockyPod.com →](https://rockypod.com/blog/neotoi-coder-v2-release)**
 
 ## What's in this repo
 
