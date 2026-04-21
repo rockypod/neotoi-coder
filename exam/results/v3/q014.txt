@@ -1,0 +1,61 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly:
+```html
+<nav aria-label="Breadcrumb">
+  <ol class="flex gap-2">
+    <li><a href="/">Home</a></li>
+    <li aria-hidden="true">/</li>
+    <li><a href="/blog">Blog</a></li>
+  </ol>
+</nav>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxo 0.7 patterns: `rsx!` with brace syntax, `class:` for Tailwind v4 utility classes, and direct HTML attribute conversion (`aria_label`, `href`). Maintained exact structure from source — no added attributes or modified content. Rejected outdated 0.6 patterns like `cx.render` and `use_state`. Ensured WCAG compliance by preserving `aria-label` and not adding extra accessibility attributes.
+
+[End thinking]
+
+// src/components/breadcrumb.rs
+use dioxo::prelude::*;
+
+pub fn Breadcrumb() -> Element {
+    rsx! {
+        nav aria_label: "Breadcrumb" {
+            ol class: "flex gap-2" {
+                li { a href: "/" { "Home" } }
+                li aria_hidden: "true" { "/" }
+                li { a href: "/blog" { "Blog" } }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1638.1 t/s | Generation: 82.7 t/s ]
+
+Exiting...

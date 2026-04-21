@@ -1,0 +1,141 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7.3 server function that returns custom HTTP status codes on error. Show ServerFnError with status code integration. Client handles specific error variants differently in the three-arm match.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This solution implements a Dioxus 0.7.3 server function using `#[server]` with explicit `ServerFnError::new()` for custom HTTP status codes (401, 402). The client component uses `use_resource` to handle the async call and matches on three arms: None (loading), Some(Ok(...)), Some(Err(e)). For errors, it distinguishes between specific ServerFnError variants with different status codes. The code follows Dioxus 0.7 patterns: no cx/render/use_state, proper signal usage in closures, correct imports from dioxus::prelude. It avoids outdated 0.6 patterns like use_state + use_effect for async or explicit prevent_default on forms.
+
+[End thinking]
+
+// src/lib.rs
+use dioxus::prelude::*;
+use dioxus::server::{ServerFnError, ServerFn};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct User {
+    pub id: u32,
+    pub name: String,
+}
+
+// Define custom error type with status code
+#[derive(Debug, Clone, PartialEq)]
+pub enum CustomServerError {
+    Unauthorized,
+    PaymentRequired,
+    InternalServerError,
+}
+
+impl From<CustomServerError> for ServerFnError {
+    fn from(error: CustomServerError) -> Self {
+        match error {
+            CustomServerError::Unauthorized => ServerFnError::new(401, "Unauthorized".to_string()),
+            CustomServerError::PaymentRequired => ServerFnError::new(402, "Payment Required".to_string()),
+            CustomServerError::InternalServerError => ServerFnError::new(500, "Internal Server Error".to_string()),
+        }
+    }
+}
+
+// Server function with custom error handling
+#[server]
+pub async fn get_user_data(id: u32) -> Result<User, ServerFnError> {
+    // Simulate database lookup
+    if id == 0 {
+        return Err(CustomServerError::Unauthorized.into());
+    } else if id == 1 {
+        return Err(CustomServerError::PaymentRequired.into());
+    }
+    
+    Ok(User { id: id, name: format!("User {}", id) })
+}
+
+// Client component to demonstrate error handling
+#[component]
+pub fn UserComponent() -> Element {
+    let user_data = use_resource(|| async move {
+        get_user_data(0).await // This will trigger unauthorized error
+    });
+
+    rsx! {
+        div {
+            class: "p-4",
+            match &*user_data.read_unchecked() {
+                None => rsx! { span { class: "text-gray-500", "Loading..." } },
+                Some(Ok(user)) => rsx! { 
+                    div { 
+                        class: "bg-green-100 p-2 rounded",
+                        h3 { "User Data" }
+                        p { "ID: {user.id}" }
+                        p { "Name: {user.name}" }
+                    } 
+                },
+                Some(Err(e)) => {
+                    match e.status() {
+                        Some(401) => rsx! { 
+                            div { 
+                                class: "bg-red-100 p-2 rounded",
+                                h3 { "Authentication Error" }
+                                p { "You must be logged in to view this data." } 
+                            } 
+                        },
+                        Some(402) => rsx! {
+                            div { 
+                                class: "bg-yellow-100 p-2 rounded",
+                                h3 { "Payment Required" }
+                                p { "Please make a payment before proceeding." } 
+                            } 
+                        },
+                        _ => rsx! {
+                            div { 
+                                class: "bg-red-100 p-2 rounded",
+                                h3 { "Server Error" }
+                                p { "An unexpected error occurred." } 
+                            } 
+                        },
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Main app component
+#[component]
+pub fn App() -> Element {
+    rsx! {
+        div {
+            class: "p-4",
+            h1 { "Dioxus 0.7 Server Function Demo" }
+            UserComponent {}
+        }
+    }
+}
+
+
+[ Prompt: 1333.0 t/s | Generation: 82.4 t/s ]
+
+Exiting...

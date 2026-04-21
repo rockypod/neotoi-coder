@@ -1,0 +1,102 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Fetch a list of posts from /api/posts using use_resource and reqwest. Three-arm match in RSX: None spinner with role: "status" and aria_label, Some(Err) error div with role: "alert" and aria_labelledby pointing to heading id, Some(Ok) list with stable keys. No .ok() wrapper.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used use_resource for async fetching per Dioxus 0.7 rules (rule #3). Three-arm match in RSX: None spinner with role="status" and aria_label (WCAG 2.2 AAA), Some(Err) error div with role="alert" and aria_labelledby pointing to heading id, Some(Ok) list with stable keys using key attribute on mapped items. No .ok() wrapper used as per instruction (rule #10). Used rsx! brace syntax only (rule #29). Signals not needed for this simple fetch pattern.
+
+[End thinking]
+
+// src/components/post_list.rs
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Post {
+    pub id: u32,
+    pub title: String,
+    pub content: String,
+}
+
+#[component]
+pub fn PostList() -> Element {
+    let posts = use_resource(|| async move {
+        reqwest::get("http://localhost:3000/api/posts")
+            .await?
+            .json::<Vec<Post>>()
+            .await
+    });
+
+    rsx! {
+        div {
+            class: "posts-container",
+            match &*posts.read_unchecked() {
+                None => rsx! {
+                    div {
+                        role: "status",
+                        aria_label: "Loading posts...",
+                        class: "flex justify-center items-center h-32",
+                        span {
+                            class: "animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"
+                        }
+                    }
+                },
+                Some(Err(e)) => rsx! {
+                    div {
+                        role: "alert",
+                        aria_labelledby: "error-heading",
+                        class: "bg-red-100 border-l-4 border-red-500 p-4 mb-4",
+                        h2 {
+                            id: "error-heading",
+                            class: "text-lg font-medium text-red-800",
+                            "Error loading posts"
+                        }
+                        p { class: "text-red-700", "{e}" }
+                    }
+                },
+                Some(Ok(data)) => rsx! {
+                    ul {
+                        class: "divide-y divide-gray-200",
+                        data.iter().map(|post| rsx! {
+                            li {
+                                key: "{post.id}",
+                                class: "py-4",
+                                h3 { class: "text-lg font-medium text-gray-900", "{post.title}" }
+                                p { class: "text-gray-500 mt-1", "{post.content}" }
+                            }
+                        })
+                    }
+                },
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1654.5 t/s | Generation: 82.6 t/s ]
+
+Exiting...

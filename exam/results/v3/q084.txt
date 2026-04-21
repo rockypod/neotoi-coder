@@ -1,0 +1,68 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 LanguageToggle button. Reads LANG GlobalSignal. On click writes *LANG.write() = "vi" or *LANG.write() = "en" toggling between them. Includes aria_label derived inline from current language. No secondary signals.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: `use_signal` for state, `rsx!` with brace syntax, `onclick` closure capturing signal by value (not clone), and direct GlobalSignal read/write via `.write()` pattern. Rejected 0.6 patterns like `cx.render`, `use_state`, and function-call RSX syntax. The aria_label is computed inline using a match expression based on current LANG value, which is the correct Dioxus 0.7 way to derive props from signals without secondary state variables.
+
+[End thinking]
+
+// src/components/language_toggle.rs
+use dioxus::prelude::*;
+use crate::state::{LANG, Language};
+
+#[component]
+pub fn LanguageToggle() -> Element {
+    let current_lang = LANG();
+
+    rsx! {
+        button {
+            class: "px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors",
+            onclick: move |_| {
+                let new_lang = if current_lang == Language::En { Language::Vi } else { Language::En };
+                *LANG.write() = new_lang;
+            },
+            aria_label: match current_lang {
+                Language::En => "Switch to Vietnamese",
+                Language::Vi => "Chuyển sang tiếng Anh"
+            },
+            span {
+                class: "flex items-center gap-2 font-medium text-gray-800 dark:text-gray-200",
+                if current_lang == Language::En {
+                    "EN"
+                } else {
+                    "VI"
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1489.9 t/s | Generation: 82.7 t/s ]
+
+Exiting...

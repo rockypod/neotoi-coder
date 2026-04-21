@@ -1,0 +1,176 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 DataTable with sortable columns. Each sortable th has aria_sort derived inline: "ascending", "descending", or "none". Track sort with one use_signal<(String, bool)>. Alternating row colors derived inline.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component], rsx! with brace syntax, use_signal for state (sort_by and is_ascending), use_memo for derived sorted_rows, inline Rust expressions in RSX attributes (aria_sort). Avoided 0.6 patterns like cx.render and use_state. Implemented sort direction toggle on column click with conditional aria-sort values.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct DataTableProps {
+    data: Vec<RowData>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct RowData {
+    id: String,
+    name: String,
+    email: String,
+    role: String,
+}
+
+#[component]
+pub fn DataTable(props: DataTableProps) -> Element {
+    let mut sort_by = use_signal(|| "id".to_string());
+    let mut is_ascending = use_signal(|| true);
+
+    // Derived sorted rows using use_memo
+    let sorted_rows = use_memo(move || {
+        let mut data = props.data.clone();
+        data.sort_by(|a, b| {
+            match sort_by() {
+                "id" => a.id.cmp(&b.id),
+                "name" => a.name.cmp(&b.name),
+                "email" => a.email.cmp(&b.email),
+                "role" => a.role.cmp(&b.role),
+                _ => std::cmp::Ordering::Equal,
+            }
+        });
+        if !is_ascending() {
+            data.reverse();
+        }
+        data
+    });
+
+    // Inline derived row color based on index
+    let get_row_class = |index: usize| -> &'static str {
+        if index % 2 == 0 { "bg-gray-50" } else { "bg-white" }
+    };
+
+    rsx! {
+        table {
+            class: "min-w-full divide-y divide-gray-300",
+            thead {
+                tr {
+                    th {
+                        scope: "col",
+                        class: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100",
+                        onclick: move |_| {
+                            if sort_by() == "id" {
+                                is_ascending.set(!is_ascending());
+                            } else {
+                                sort_by.set("id".to_string());
+                                is_ascending.set(true);
+                            }
+                        },
+                        // Inline derived aria_sort
+                        aria_sort: match (sort_by(), is_ascending()) {
+                            ("id", true) => "ascending",
+                            ("id", false) => "descending",
+                            _ => "none"
+                        },
+                        "ID"
+                    }
+                    th {
+                        scope: "col",
+                        class: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100",
+                        onclick: move |_| {
+                            if sort_by() == "name" {
+                                is_ascending.set(!is_ascending());
+                            } else {
+                                sort_by.set("name".to_string());
+                                is_ascending.set(true);
+                            }
+                        },
+                        aria_sort: match (sort_by(), is_ascending()) {
+                            ("name", true) => "ascending",
+                            ("name", false) => "descending",
+                            _ => "none"
+                        },
+                        "Name"
+                    }
+                    th {
+                        scope: "col",
+                        class: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100",
+                        onclick: move |_| {
+                            if sort_by() == "email" {
+                                is_ascending.set(!is_ascending());
+                            } else {
+                                sort_by.set("email".to_string());
+                                is_ascending.set(true);
+                            }
+                        },
+                        aria_sort: match (sort_by(), is_ascending()) {
+                            ("email", true) => "ascending",
+                            ("email", false) => "descending",
+                            _ => "none"
+                        },
+                        "Email"
+                    }
+                    th {
+                        scope: "col",
+                        class: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100",
+                        onclick: move |_| {
+                            if sort_by() == "role" {
+                                is_ascending.set(!is_ascending());
+                            } else {
+                                sort_by.set("role".to_string());
+                                is_ascending.set(true);
+                            }
+                        },
+                        aria_sort: match (sort_by(), is_ascending()) {
+                            ("role", true) => "ascending",
+                            ("role", false) => "descending",
+                            _ => "none"
+                        },
+                        "Role"
+                    }
+                }
+            }
+            tbody {
+                class: "bg-white divide-y divide-gray-200",
+                for (index, row) in sorted_rows().into_iter().enumerate() {
+                    tr {
+                        class: format!("{} {}", get_row_class(index), if index % 2 == 0 { "hover:bg-gray-50" } else { "hover:bg-white" }),
+                        td { class: "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900", row.id }
+                        td { class: "px-6 py-4 whitespace-nowrap text-sm text-gray-500", row.name }
+                        td { class: "px-6 py-4 whitespace-nowrap text-sm text-gray-500", row.email }
+                        td { class: "px-6 py-4 whitespace-nowrap text-sm text-gray-500", row.role }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1410.8 t/s | Generation: 82.1 t/s ]
+
+Exiting...

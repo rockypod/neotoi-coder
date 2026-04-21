@@ -1,0 +1,120 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Using dioxus-primitives, build Tabs with three tabs. Import from dioxus_primitives::tabs. Active tab gets blue underline via Tailwind v4. Do NOT add aria_selected or role: "tab" manually.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+The solution uses the `Tabs` primitive from `dioxus_primitives::tabs`. This component manages ARIA attributes internally including `role`, `aria-selected`, and proper keyboard navigation. The developer is responsible for styling with Tailwind classes, specifically adding a blue underline to active tabs via conditional class application on the TabsContent elements.
+
+The structure follows correct nesting: Root (Tabs) → Trigger (TabsTrigger) → Content (TabsContent). Each TabsTrigger has a value prop that matches its corresponding TabsContent. The component uses `use_signal` for state management and properly renders each tab with appropriate styling based on active status.
+
+No manual ARIA attributes are added as required by the golden rules, and no CSS modules or Tailwind mixing is needed since this example only requires basic class application.
+
+[End thinking]
+
+use dioxus_primitives::tabs::*;
+use dioxus::prelude::*;
+
+#[component]
+pub fn TabsExample() -> Element {
+    let mut active_tab = use_signal(|| "tab1".to_string());
+
+    rsx! {
+        div { class: "p-4",
+            Tabs { 
+                value: active_tab(),
+                on_value_change: move |value| active_tab.set(value.to_string()),
+                
+                TabsList { class: "flex border-b",
+                    TabsTrigger { 
+                        value: "tab1", 
+                        class: if active_tab() == "tab1" {
+                            "border-b-2 border-blue-500"
+                        } else {
+                            ""
+                        },
+                        "Tab 1"
+                    }
+                    
+                    TabsTrigger { 
+                        value: "tab2", 
+                        class: if active_tab() == "tab2" {
+                            "border-b-2 border-blue-500"
+                        } else {
+                            ""
+                        },
+                        "Tab 2"
+                    }
+                    
+                    TabsTrigger { 
+                        value: "tab3", 
+                        class: if active_tab() == "tab3" {
+                            "border-b-2 border-blue-500"
+                        } else {
+                            ""
+                        },
+                        "Tab 3"
+                    }
+                }
+
+                TabsContent { 
+                    value: "tab1",
+                    class: if active_tab() == "tab1" {
+                        "p-4 bg-gray-50"
+                    } else {
+                        "hidden"
+                    },
+                    "Content for Tab 1"
+                }
+
+                TabsContent { 
+                    value: "tab2",
+                    class: if active_tab() == "tab2" {
+                        "p-4 bg-gray-50"
+                    } else {
+                        "hidden"
+                    },
+                    "Content for Tab 2"
+                }
+
+                TabsContent { 
+                    value: "tab3",
+                    class: if active_tab() == "tab3" {
+                        "p-4 bg-gray-50"
+                    } else {
+                        "hidden"
+                    },
+                    "Content for Tab 3"
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1421.4 t/s | Generation: 82.7 t/s ]
+
+Exiting...

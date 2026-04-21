@@ -1,0 +1,95 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 component that reads LANG from a GlobalSignal and resolves i18n strings before the rsx! block. Show let t_title = if LANG() == "vi" { "..." } else { "..." } pattern. Use {t_title} inside RSX. No secondary signals.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: GlobalSignal with pub static LANG, use_signal for state (not needed here but shown in template), rsx! brace syntax only. Rejected 0.6 patterns like cx.render and use_state. The i18n resolution happens before rsx! using let bindings as required. No secondary signals used — all resolved to plain variables.
+
+[End thinking]
+
+// src/state.rs
+use dioxus::prelude::*;
+
+/// Global language state: "en" | "vi"
+pub static LANG: GlobalSignal<&'static str> = Signal::global(|| "en");
+
+// src/components/hero.rs
+use dioxus::prelude::*;
+use crate::state::LANG;
+
+#[component]
+pub fn Hero() -> Element {
+    // Resolve i18n strings before rsx! block using let bindings
+    let t_title = if LANG() == "vi" { "Chào mừng bạn đến với Rockypod" } else { "Welcome to Rockypod" };
+    let t_subtitle = if LANG() == "vi" {
+        "Khám phá podcast chất lượng cao"
+    } else {
+        "Explore high-quality podcasts"
+    };
+
+    rsx! {
+        section {
+            class: "bg-white dark:bg-gray-900 py-20 px-6",
+            div {
+                class: "max-w-4xl mx-auto text-center",
+                h1 {
+                    class: "text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6",
+                    "{t_title}"
+                }
+                p {
+                    class: "text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8",
+                    "{t_subtitle}"
+                }
+            }
+        }
+    }
+}
+
+// src/main.rs
+use dioxus::prelude::*;
+use crate::components::hero::Hero;
+
+mod state;
+mod components {
+    pub mod hero;
+}
+
+fn main() {
+    launch(app);
+}
+
+#[component]
+pub fn app() -> Element {
+    rsx! {
+        Hero {}
+    }
+}
+
+
+[ Prompt: 1583.8 t/s | Generation: 82.7 t/s ]
+
+Exiting...

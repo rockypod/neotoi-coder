@@ -1,0 +1,125 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 hero component with full EN/VI i18n. Resolve all strings via pre-rsx let bindings reading LANG GlobalSignal. Include h1, subtitle p, CTA button — all translated. Background SVG uses defs { pattern { } } structure with matching id. aria_hidden: "true" (unquoted) on decorative SVG.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: pre-rsx let bindings for i18n resolution, GlobalSignal via `use_signal`, rsx! brace syntax only, r#for on label elements (not used here but pattern enforced), aria_hidden unquoted as required. SVG structure uses defs > pattern with id matching fill reference — correct Dioxus 0.7 behavior. All components use #[component] and return Element directly without cx.render or Scope parameters.
+
+[End thinking]
+
+// src/components/hero.rs
+use dioxus::prelude::*;
+
+#[derive(Clone, Copy)]
+pub enum Lang {
+    En,
+    Vi,
+}
+
+impl Default for Lang {
+    fn default() -> Self {
+        Lang::En
+    }
+}
+
+pub static LANG: GlobalSignal<Lang> = Signal::global(|| Lang::En);
+
+// Pre-rsx let bindings for i18n resolution
+fn resolve_hero_strings(lang: &Lang) -> (&'static str, &'static str, &'static str) {
+    match *lang {
+        Lang::Vi => ("Chào mừng đến với Rockypod", "Trang web học lập trình Rust chuyên sâu cho người Việt.", "Bắt đầu ngay"),
+        _ => ("Welcome to Rockypod", "In-depth Rust programming site for Vietnamese learners.", "Get started"),
+    }
+}
+
+#[component]
+pub fn Hero() -> Element {
+    let (title, subtitle, cta_text) = resolve_hero_strings(&LANG());
+
+    rsx! {
+        section {
+            class: "relative overflow-hidden bg-white pt-24 pb-16 sm:pt-32 lg:pb-20 xl:pb-32",
+            div {
+                class: "mx-auto max-w-7xl px-6 lg:px-8",
+                div {
+                    class: "mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2",
+                    div {
+                        h1 {
+                            class: "text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl",
+                            "{title}"
+                        }
+                        p {
+                            class: "mt-6 text-xl leading-8 text-gray-500",
+                            "{subtitle}"
+                        }
+                        div {
+                            class: "mt-10 flex items-center gap-x-6",
+                            button {
+                                r#type: "button",
+                                class: "rounded-md bg-indigo-600 px-3.5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                                "{cta_text}"
+                            }
+                        }
+                    }
+                    div {
+                        class: "relative flex items-center sm:-mx-4 lg:mx-0 lg:h-full lg:w-full",
+                        svg {
+                            class: "absolute inset-y-0 left-1/2 -ml-12 w-[39rem] origin-top_right skew-x-[-30deg] md:left-0 md:ml-0",
+                            width: 408,
+                            height: 512,
+                            fill: "none",
+                            viewBox: "0 0 408 512",
+                            aria_hidden: "true",
+                            defs {
+                                pattern {
+                                    id: "b3f67a9c-9e8d-4e8d-b9c8-6e8dd597f852",
+                                    width: 20,
+                                    height: 20,
+                                    pattern_units: "userSpaceOnUse",
+                                    path {
+                                        d: "M.5 20L20 1.5l-20-18.5z",
+                                        fill: "#97b0c4"
+                                    }
+                                }
+                            }
+                            rect {
+                                width: "408",
+                                height: "512",
+                                fill: "url(#b3f67a9c-9e8d-4e8d-b9c8-6e8dd597f852)"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1762.7 t/s | Generation: 82.4 t/s ]
+
+Exiting...

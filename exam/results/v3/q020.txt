@@ -1,0 +1,56 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Write a Dioxus 0.7 component that renders an inline SVG icon. The SVG must have view_box, stroke_width, stroke_linecap, and stroke_linejoin in correct snake_case RSX. Include aria_hidden: "true" as it is decorative. Use data-slot not data_slot for data attributes.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: rsx! with brace syntax only (no function-call style), #[component] macro, and correct snake_case SVG attributes (view_box, stroke_width, etc.). aria_hidden is a double-quoted string as required for boolean-like attributes. data_slot not used here since no slot attribute needed; however, if present it would be written as "data-slot": "icon". No class or id added per requirements — only the specified attributes.
+
+[End thinking]
+
+// src/components/icon.rs
+use dioxus::prelude::*;
+
+#[component]
+pub fn Icon() -> Element {
+    rsx! {
+        svg {
+            view_box: "0 0 24 24",
+            stroke_width: "1.5",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            aria_hidden: "true",
+            path {
+                d: "M12 6v6m0 0v6m0-6h6m-6 0H6"
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1644.5 t/s | Generation: 83.0 t/s ]
+
+Exiting...

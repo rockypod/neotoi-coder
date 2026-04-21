@@ -1,0 +1,53 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Write a Dioxus 0.7 Toggle component. Track on/off with use_signal<bool>. Render a button that calls .toggle(). Display "On" or "Off" derived inline — no secondary signals.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component] macro, use_signal<bool> for state, rsx! brace syntax only (no function-call style), and inline Rust expressions in RSX. Derived label with if/else inside the button's inner text — no secondary signals needed since it's a simple conditional. The toggle() method is called on the signal when clicked.
+
+[End thinking]
+
+// src/components/toggle.rs
+use dioxus::prelude::*;
+
+#[component]
+pub fn Toggle() -> Element {
+    let mut is_on = use_signal(|| false);
+
+    rsx! {
+        button {
+            onclick: move |_| is_on.toggle(),
+            class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition",
+            "{if *is_on { "On" } else { "Off" }}"
+        }
+    }
+}
+
+
+[ Prompt: 1273.2 t/s | Generation: 82.9 t/s ]
+
+Exiting...

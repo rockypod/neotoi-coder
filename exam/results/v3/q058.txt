@@ -1,0 +1,127 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a multi-resource component that fetches user data and their posts separately using two use_resource calls. Combine results inline in RSX — show loading if either is None, show error if either is Some(Err), show combined view when both are Some(Ok).<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: `use_resource` for async data fetching with proper error handling via Result type, inline conditional rendering in RSX using match expressions (not outdated use_state + effect patterns), and signal-like resource state management. Avoided 0.6 anti-patterns like `use_state`, `cx.render`, or `use_router`. The component fetches user and posts data separately with distinct resource calls, then combines results inline without intermediate signals. All RSX uses brace syntax as required.
+
+[End thinking]
+
+// src/components/user_posts.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct UserPostsProps {
+    user_id: String,
+}
+
+pub fn UserPosts(props: UserPostsProps) -> Element {
+    let user_resource = use_resource(move || async move {
+        fetch_user(&props.user_id).await
+    });
+
+    let posts_resource = use_resource(move || async move {
+        fetch_posts(&props.user_id).await
+    });
+
+    rsx! {
+        div { class: "user-posts-container",
+            match &*user_resource.read_unchecked() {
+                Some(Ok(user)) => {
+                    match &*posts_resource.read_unchecked() {
+                        Some(Ok(posts)) => {
+                            rsx! {
+                                div { class: "user-info",
+                                    h2 { "User: {user.name}" }
+                                    p { "Email: {user.email}" }
+                                }
+                                div { class: "posts-list",
+                                    h3 { "Posts by {user.name}" }
+                                    ul {
+                                        r#for: post in posts.clone().into_iter() {
+                                            li { key: "{post.id}", "{post.title}: {post.body}" }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        Some(Err(e)) => rsx! {
+                            div { class: "error", "Error loading posts: {e}" }
+                        },
+                        None => rsx! {
+                            div { class: "loading", "Loading posts..." }
+                        },
+                    }
+                },
+                Some(Err(e)) => rsx! {
+                    div { class: "error", "Error loading user: {e}" }
+                },
+                None => rsx! {
+                    div { class: "loading", "Loading user and posts..." }
+                },
+            }
+        }
+    }
+}
+
+async fn fetch_user(id: &str) -> Result<User, String> {
+    // Simulated async API call
+    tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+    Ok(User {
+        id: id.to_string(),
+        name: "John Doe".to_string(),
+        email: "john@example.com".to_string(),
+    })
+}
+
+async fn fetch_posts(id: &str) -> Result<Vec<Post>, String> {
+    // Simulated async API call
+    tokio::time::sleep(tokio::time::Duration::from_millis(300)).await;
+    Ok(vec![
+        Post { id: "1".to_string(), title: "First Post".to_string(), body: "Hello world!".to_string() },
+        Post { id: "2".to_string(), title: "Second Post".to_string(), body: "Another post.".to_string() },
+    ])
+}
+
+#[derive(Clone, Debug)]
+struct User {
+    id: String,
+    name: String,
+    email: String,
+}
+
+#[derive(Clone, Debug)]
+struct Post {
+    id: String,
+    title: String,
+    body: String,
+}
+
+
+[ Prompt: 1445.9 t/s | Generation: 82.5 t/s ]
+
+Exiting...

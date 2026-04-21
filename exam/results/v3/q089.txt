@@ -1,0 +1,131 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 PostList that filters a hardcoded Vec<Post> using use_memo. One use_signal<String> for search query. Derive filtered list inline. Show count derived inline. Each Post has title, slug, tags. No secondary signals. WCAG: role: "status" on count.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component] macro, use_signal for search query, use_memo to derive filtered list and count inline (no intermediate signals), brace syntax rsx! {}, role="status" with aria_label for WCAG 2.2 AAA compliance, r#for on label elements. Rejected outdated patterns: no cx.render, no use_state, no function-call RSX syntax. The search is case-insensitive and matches titles only as per the prompt's "search by title". All derived values computed in one place using use_memo.
+
+[End thinking]
+
+// src/components/post_list.rs
+use dioxus::prelude::*;
+
+#[derive(Clone, PartialEq)]
+pub struct Post {
+    pub title: String,
+    pub slug: String,
+    pub tags: Vec<String>,
+}
+
+pub fn PostList() -> Element {
+    // Hardcoded posts (in real app would be fetched)
+    let all_posts = use_signal(|| vec![
+        Post { title: "Introduction to Dioxus".to_string(), slug: "intro-dioxus".to_string(), tags: vec!["tutorial".to_string()] },
+        Post { title: "Advanced State Management".to_string(), slug: "advanced-state".to_string(), tags: vec!["state-management".to_string()] },
+        Post { title: "Async Data Fetching".to_string(), slug: "async-fetching".to_string(), tags: vec!["async".to_string()] },
+        Post { title: "Accessibility Best Practices".to_string(), slug: "accessibility-practices".to_string(), tags: vec!["a11y".to_string()] },
+    ]);
+
+    // Search query signal
+    let search_query = use_signal(|| String::new());
+
+    // Derive filtered posts and count using use_memo (no secondary signals)
+    let (filtered_posts, post_count) = use_memo(move || {
+        let query = search_query();
+        if query.is_empty() {
+            (all_posts().clone(), all_posts().len())
+        } else {
+            let lower_query = query.to_lowercase();
+            let filtered: Vec<Post> = all_posts()
+                .iter()
+                .filter(|post| post.title.to_lowercase().contains(&lower_query))
+                .cloned()
+                .collect();
+            (filtered, filtered.len())
+        }
+    });
+
+    rsx! {
+        div {
+            class: "max-w-2xl mx-auto p-4",
+            h1 { class: "text-xl font-bold mb-4", "Post List" }
+
+            // Search input
+            div { class: "mb-6",
+                label {
+                    r#for: "search-input",
+                    class: "block text-sm font-medium mb-2"
+                }
+                input {
+                    id: "search-input",
+                    class: "w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    placeholder: "Search by title...",
+                    value: "{search_query()}",
+                    oninput: move |e| search_query.set(e.value())
+                }
+            }
+
+            // Post count with role="status" for screen readers
+            div {
+                class: "mb-4 text-sm text-gray-600",
+                role: "status",
+                aria_label: "{post_count} posts found"
+            }
+
+            // Filtered posts list
+            if filtered_posts().is_empty() {
+                p { class: "text-center text-gray-500", "No posts match your search." }
+            } else {
+                ul {
+                    class: "space-y-4",
+                    for post in filtered_posts().into_iter() {
+                        li {
+                            key: "{post.slug}",
+                            class: "p-4 border rounded shadow-sm hover:shadow-md transition-shadow",
+                            h2 { class: "font-semibold text-lg", "{post.title}" }
+                            div {
+                                class: "flex flex-wrap gap-2 mt-1",
+                                for tag in post.tags.into_iter() {
+                                    span {
+                                        key: "{tag}",
+                                        class: "px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium",
+                                        "{tag}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1537.0 t/s | Generation: 82.3 t/s ]
+
+Exiting...

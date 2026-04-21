@@ -1,0 +1,74 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Using dioxus-primitives, build a RadioGroup for plan selection: "Free", "Pro", "Enterprise". Import from dioxus_primitives::radio_group. Use RadioGroupItem not RadioItem. Track with use_signal<String>. Style selected with blue ring. Do NOT add role: "radiogroup", role: "radio", or aria_checked manually.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used dioxus-primitives 0.1 import path `use dioxus_primitives::radio_group::*;`. Created RadioGroupRoot with id and label, then three RadioGroupItem components each with value prop. Used use_signal to track selection state. Added aria_labelledby on the group for accessibility (not manually adding role). Styled selected item with Tailwind ring-blue-500. No manual ARIA attributes added — primitives handle them internally.
+
+[End thinking]
+
+use dioxus::prelude::*;
+use dioxus_primitives::radio_group::*;
+
+#[component]
+pub fn PlanRadioGroup() -> Element {
+    let mut selected_plan = use_signal(|| "Free".to_string());
+
+    rsx! {
+        div { class: "p-6 max-w-md mx-auto",
+            RadioGroupRoot {
+                id: "plan-group",
+                label: "Select your plan:",
+                on_value_change: move |value| selected_plan.set(value.to_string()),
+                aria_labelledby: "plan-label",
+
+                RadioGroupItem {
+                    value: "Free",
+                    class: if selected_plan() == "Free" { "ring-2 ring-blue-500" } else { "" },
+                    label: "Free"
+                }
+
+                RadioGroupItem {
+                    value: "Pro",
+                    class: if selected_plan() == "Pro" { "ring-2 ring-blue-500" } else { "" },
+                    label: "Pro"
+                }
+
+                RadioGroupItem {
+                    value: "Enterprise",
+                    class: if selected_plan() == "Enterprise" { "ring-2 ring-blue-500" } else { "" },
+                    label: "Enterprise"
+                }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1722.3 t/s | Generation: 82.8 t/s ]
+
+Exiting...

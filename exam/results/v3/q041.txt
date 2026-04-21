@@ -1,0 +1,94 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 accessible tooltip. Trigger button has aria_describedby pointing to tooltip id unconditionally. Tooltip has role: "tooltip" and stable id. Tooltip always in DOM — show/hide via CSS class not DOM removal. Signal controls visibility class.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+The code implements a Dioxus 0.7 accessible tooltip using the correct pattern for aria_describedby stability. The key rule applied is that aria_describedby must never be conditional — it always points to a stable ID. In this implementation, the trigger button's `aria_describedby` attribute unconditionally references `"tooltip-id"`, which matches the tooltip element's id. This ensures screen readers can consistently associate the trigger with its description even when visually hidden.
+
+The solution follows Dioxus 0.7 patterns: using `use_signal(|| false)` for state, proper component syntax with `#[component]` macro (implied by function signature), and conditional rendering via CSS class rather than DOM removal. The tooltip element is always present in the DOM — only its visibility toggles through class application.
+
+This approach prevents accessibility failures where screen readers would lose track of the relationship between trigger and content when aria_describedby was conditionally removed from the DOM, which violates WCAG 2.2 AAA requirements for stable ARIA relationships.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct TooltipProps {
+    tooltip_text: String,
+}
+
+// This component demonstrates the correct Dioxus 0.7 pattern for accessible tooltips
+pub fn AccessibleTooltip(props: TooltipProps) -> Element {
+    // Signal to control visibility - this is NOT conditional in DOM removal but via class toggle
+    let mut show_tooltip = use_signal(|| false);
+    
+    rsx! {
+        div { class: "flex flex-col gap-2",
+            button {
+                aria_describedby: "tooltip-id",  // This is the critical pattern - never conditional!
+                onclick: move |_| show_tooltip.toggle(),
+                class: if *show_tooltip.read() { 
+                    "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" 
+                } else {
+                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+                },
+                "Hover me for tooltip"
+            }
+            
+            // Tooltip element is ALWAYS in DOM - visibility controlled via class, not conditional rendering
+            div {
+                id: "tooltip-id",  // This ID must match the aria_describedby reference
+                role: "tooltip",
+                class: if *show_tooltip.read() { 
+                    "bg-gray-800 text-white px-3 py-2 rounded shadow-lg" 
+                } else {
+                    "sr-only"
+                },
+                "{props.tooltip_text}"
+            }
+        }
+    }
+}
+
+// Example usage in a parent component
+pub fn App() -> Element {
+    rsx! {
+        div { class: "p-4",
+            h1 { "Accessible Tooltip Demo" }
+            
+            AccessibleTooltip {
+                tooltip_text: "This is an accessible tooltip".to_string()
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1522.8 t/s | Generation: 82.4 t/s ]
+
+Exiting...

@@ -1,0 +1,61 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Using dioxus-primitives, render a Checkbox. Import from dioxus_primitives::checkbox. Style with Tailwind v4: gray border unchecked, blue fill checked. Derive style inline from signal. Linked label via r#for/id. Fire on_checked_change updating use_signal<bool>. Do NOT manually add ARIA.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used dioxus_primitives::checkbox::* as required. Created Checkbox component with checked and on_checked_change props, using use_signal<bool> for state management. Applied Tailwind v4 classes inline: gray border unchecked (border-gray-400), blue fill checked (bg-blue-500). No manual ARIA attributes added — primitives handle aria-checked internally. Used rsx! syntax with proper brace-style element construction as required.
+
+[End thinking]
+
+use dioxus_primitives::checkbox::*;
+use dioxus::prelude::*;
+
+#[component]
+pub fn CheckboxExample() -> Element {
+    let mut is_checked = use_signal(|| false);
+
+    rsx! {
+        div { class: "flex items-center gap-2",
+            label {
+                r#for: "checkbox-example",
+                class: "text-gray-700 dark:text-gray-300",
+                "Enable notifications"
+            }
+            Checkbox {
+                id: "checkbox-example",
+                checked: is_checked(),
+                on_checked_change: move |new_value| is_checked.set(new_value),
+                class: if *is_checked() { "bg-blue-500 border-gray-400" } else { "border-gray-400" },
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1522.6 t/s | Generation: 82.7 t/s ]
+
+Exiting...

@@ -1,0 +1,52 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly to Dioxus 0.7 RSX — no added attributes, no missing attributes, no reordering:
+```html
+<button type="button" class="px-4 py-2 rounded">
+  Toggle
+</button>
+```
+Must use r#type: not type:. Must include "Toggle" text node. Must not add aria or class modifications.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+I converted the HTML button to Dioxus 0.7 RSX exactly as specified, using `r#type:` instead of `type:` (since `type` is a Rust keyword), preserving all attributes and text content without any additions or omissions. I used proper RSX syntax with brace-style element blocks (`button { ... }`) and included the exact "Toggle" text node. No extra attributes like `aria-*` were added, and no class modifications were made — only the original HTML structure was converted.
+
+[End thinking]
+
+// src/components/button.rs
+use dioxus::prelude::*;
+
+pub fn ToggleButton() -> Element {
+    rsx! {
+        button { r#type: "button", class: "px-4 py-2 rounded", "Toggle" }
+    }
+}
+
+
+[ Prompt: 1718.7 t/s | Generation: 82.8 t/s ]
+
+Exiting...

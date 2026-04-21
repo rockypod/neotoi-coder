@@ -1,0 +1,113 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 NavIntent component that maps a use_signal<String> intent value to a filtered content view. Intent options: "latest", "older", "tutorials", "all". Use match in RSX to render different filtered views per intent. Buttons set intent signal directly. WCAG: aria_current: "true" on active intent button.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component], use_signal(|| "all"), rsx! with brace syntax, match in RSX for conditional rendering. WCAG via aria_current="true". No secondary signals or use_memo needed since intent is the only reactive signal driving content filtering. Rejected outdated 0.6 patterns like cx.render and use_state.
+
+[End thinking]
+
+// src/components/nav_intent.rs
+use dioxus::prelude::*;
+
+#[derive(Clone, PartialEq)]
+pub struct Post {
+    pub title: String,
+    pub slug: String,
+    pub tags: Vec<String>,
+}
+
+pub fn NavIntent() -> Element {
+    let mut intent = use_signal(|| "all".to_string());
+
+    // Simulated static content for demonstration
+    let posts = vec![
+        Post { title: "Latest Features".to_string(), slug: "latest-features".to_string(), tags: vec!["tutorial".into()] },
+        Post { title: "Older Articles".to_string(), slug: "older-articles".to_string(), tags: vec!["reference".into()] },
+        Post { title: "Advanced Tutorials".to_string(), slug: "advanced-tutorials".to_string(), tags: vec!["tutorial".into()] },
+    ];
+
+    // Filter posts based on intent
+    let filtered_posts = match intent().as_str() {
+        "latest" => posts.iter().filter(|p| p.tags.contains(&"tutorial".to_string())).cloned().collect::<Vec<_>>(),
+        "older" => posts.iter().filter(|p| !p.tags.contains(&"tutorial".to_string())).cloned().collect::<Vec<_>>(),
+        "tutorials" => posts.iter().filter(|p| p.tags.contains(&"tutorial".to_string())).cloned().collect::<Vec<_>>(),
+        _ => posts.clone(),
+    };
+
+    rsx! {
+        div { class: "nav-intent",
+            // Intent buttons with aria_current on active
+            div { class: "intent-buttons flex gap-2 mb-4",
+                button {
+                    onclick: move |_| intent.set("latest".to_string()),
+                    aria_current: if intent() == "latest" { Some("true") } else { None },
+                    class: if intent() == "latest" { "bg-blue-500 text-white" } else { "bg-gray-200 dark:bg-gray-700" },
+                    "Latest"
+                }
+                button {
+                    onclick: move |_| intent.set("older".to_string()),
+                    aria_current: if intent() == "older" { Some("true") } else { None },
+                    class: if intent() == "older" { "bg-blue-500 text-white" } else { "bg-gray-200 dark:bg-gray-700" },
+                    "Older"
+                }
+                button {
+                    onclick: move |_| intent.set("tutorials".to_string()),
+                    aria_current: if intent() == "tutorials" { Some("true") } else { None },
+                    class: if intent() == "tutorials" { "bg-blue-500 text-white" } else { "bg-gray-200 dark:bg-gray-700" },
+                    "Tutorials"
+                }
+            }
+
+            // Content view matching intent
+            match intent().as_str() {
+                "latest" => rsx! { div { class: "content", h2 { "Latest Tutorials" } } },
+                "older" => rsx! { div { class: "content", h2 { "Older Articles" } } },
+                "tutorials" => rsx! { 
+                    ul { class: "posts-list",
+                        filtered_posts.iter().map(|post| rsx! {
+                            li { key: "{post.slug}", a { href: "/posts/{}", post.title.clone() } }
+                        })
+                    }
+                },
+                _ => rsx! { div { class: "content", h2 { "All Posts" } } },
+            }
+
+            // Reset button
+            button {
+                onclick: move |_| intent.set("all".to_string()),
+                class: "mt-4 px-3 py-1 bg-gray-300 dark:bg-gray-600",
+                "Reset to All"
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1741.7 t/s | Generation: 82.4 t/s ]
+
+Exiting...

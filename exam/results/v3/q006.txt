@@ -1,0 +1,50 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly to Dioxus 0.7 RSX:
+```html
+<button type="button" aria-pressed="false" class="px-4 py-2">Toggle</button>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used `r#type` for the reserved keyword, quoted `"aria-pressed"` as required by Dioxus 0.7's attribute handling, and double quotes around the string literal value "false". No extra attributes added — matched HTML exactly per instruction.
+
+[End thinking]
+
+```rust
+rsx! {
+    button { 
+        r#type: "button", 
+        aria_pressed: "false", 
+        class: "px-4 py-2",
+        "Toggle"
+    }
+}
+```
+
+[ Prompt: 1264.8 t/s | Generation: 82.9 t/s ]
+
+Exiting...

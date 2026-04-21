@@ -1,0 +1,77 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 notification banner. role: "alert", aria_live: "assertive", aria_labelledby pointing to a real h2 id inside it. Close button with aria_label. Empty state uses rsx! {}. Conditionally rendered in DOM.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This implementation follows Dioxus 0.7 patterns by using `use_signal` for state management, proper conditional rendering via Rust control flow in RSX (`if show_notification { ... } else { rsx! {} }`), and correct attribute usage like `aria_labelledby`. The component uses the required role="alert" with aria_live="assertive", which is appropriate for urgent notifications. The close button has aria_label as specified, and the h2 element inside the banner has id "notification-title" that matches the aria_labelledby reference. Empty state correctly returns rsx! {} instead of whitespace or null values. No outdated 0.6 patterns like `use_state` or incorrect event handling are present.
+
+[End thinking]
+
+// src/components/notification_banner.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct NotificationBannerProps {
+    pub show_notification: bool,
+}
+
+#[component]
+pub fn NotificationBanner(props: NotificationBannerProps) -> Element {
+    let mut is_visible = use_signal(|| props.show_notification);
+    
+    if !is_visible() {
+        return rsx! {};
+    }
+
+    rsx! {
+        div [
+            class: "bg-red-100 border-l-4 border-red-500 p-4",
+            role: "alert",
+            aria_live: "assertive",
+            aria_labelledby: "notification-title"
+        ] {
+            h2 [id: "notification-title", class: "text-lg font-medium text-red-800"] { 
+                "Important Update" 
+            }
+            p [class: "text-red-700"] { 
+                "Please review the latest changes to our terms of service." 
+            }
+            button [
+                aria_label: "Close notification",
+                onclick: move |_| is_visible.set(false),
+                class: "ml-auto text-red-500 hover:text-red-700"
+            ] {
+                "×"
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1463.1 t/s | Generation: 82.7 t/s ]
+
+Exiting...

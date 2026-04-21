@@ -1,0 +1,66 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly — preserve all attributes and nesting:
+```html
+<div role="alert" aria-labelledby="error-title" class="rounded border border-red-300 p-4">
+  <h2 id="error-title" class="font-semibold text-red-700">Error</h2>
+  <p class="text-red-600">Something went wrong. Please try again.</p>
+</div>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+I converted the HTML exactly as requested, preserving all attributes and nesting structure. The component uses proper Dioxus 0.7 patterns: `#[component]` macro, correct attribute syntax (`role`, `aria-labelledby`, `id`, class), and inline text nodes with explicit whitespace. I avoided any invalid patterns like `cx.render` or outdated 0.6 features such as `use_state`. The conversion maintains the original HTML's semantic structure and accessibility attributes without adding any extra content.
+
+[End thinking]
+
+// src/components/error_banner.rs
+use dioxus::prelude::*;
+
+#[component]
+pub fn ErrorBanner() -> Element {
+    rsx! {
+        div {
+            role: "alert",
+            aria_labelledby: "error-title",
+            class: "rounded border border-red-300 p-4",
+            h2 {
+                id: "error-title",
+                class: "font-semibold text-red-700",
+                "Error"
+            }
+            p {
+                class: "text-red-600",
+                "Something went wrong. Please try again."
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1840.0 t/s | Generation: 82.7 t/s ]
+
+Exiting...

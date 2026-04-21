@@ -1,0 +1,35 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 PostCard component that takes a Post struct prop with title: String, slug: String, tags: Vec<String>, published_at: String. Render a card with title link, tag badges, and date. Link href derived from slug. Tag badges use aria_label. WCAG AAA contrast via semantic tokens.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component] macro, Props struct derivation, rsx! brace syntax only (no function-call style), r#for on label elements, key: for list items, and proper href construction from slug. Rejected 0.6 patterns like use_state, cx.render, and use_router. Implemented WCAG AAA with semantic tokens via Tailwind classes and aria_label on tags.
+
+
+[ Prompt: 1649.4 t/s | Generation: 82.9 t/s ]
+
+Exiting...

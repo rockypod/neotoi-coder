@@ -1,0 +1,61 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly:
+```html
+<figure class="mt-4">
+  <img src="/photo.jpg" alt="Team photo" width="800" height="600">
+  <figcaption class="text-sm text-gray-500">Our team at the 2025 summit.</figcaption>
+</figure>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This component renders a figure element with image and figcaption exactly as specified. I used Dioxus 0.7 patterns: `#[component]` macro, proper RSX syntax with class attributes using Tailwind v4 utility classes (mt-4, text-sm, text-gray-500), correct attribute names (`src`, `alt`, `width`, `height`) and values matching the HTML source. I avoided any Dioxus 0.6 patterns like `cx.render` or `use_state`. The component is self-contained with no extra imports needed beyond dioxus::prelude.
+
+[End thinking]
+
+// src/components/team_photo.rs
+use dioxus::prelude::*;
+
+#[component]
+pub fn TeamPhoto() -> Element {
+    rsx! {
+        figure { class: "mt-4",
+            img {
+                src: "/photo.jpg",
+                alt: "Team photo",
+                width: 800,
+                height: 600
+            }
+            figcaption { class: "text-sm text-gray-500", "Our team at the 2025 summit." }
+        }
+    }
+}
+
+
+[ Prompt: 1655.8 t/s | Generation: 82.4 t/s ]
+
+Exiting...

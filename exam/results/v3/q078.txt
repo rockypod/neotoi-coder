@@ -1,0 +1,57 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7.3 component using the native scoped CSS feature. Use the css!() macro to define scoped styles inline. Apply scoped class to a card div with title and body. Show the correct import. Expected pattern:
+```rust
+let styles = css!(".card { border: 1px solid #e2e8f0; }" ".card-title { font-weight: bold; }");
+rsx! { div { class: "{styles} card", h2 { class: "card-title", "{title}" } p { "{body}" } } }
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used css!() macro to define scoped styles. Applied class interpolation with "{styles} card" to combine base and child classes. Used Dioxus 0.7 patterns: #[component], use_signal (not needed here), rsx!{} with brace syntax. Rejected 0.6 patterns like cx.render, use_state, and function-call RSX syntax.
+
+[End thinking]
+
+// src/components/scoped_card.rs
+use dioxus::prelude::*;
+
+let styles = css!(".card { border: 1px solid #e2e8f0; padding: 1rem; }" ".card-title { font-weight: bold; margin-bottom: 0.5rem; }");
+
+#[component]
+pub fn ScopedCard(title: String, body: String) -> Element {
+    rsx! {
+        div {
+            class: "{styles} card",
+            h2 { class: "card-title", "{title}" }
+            p { "{body}" }
+        }
+    }
+}
+
+
+[ Prompt: 1958.9 t/s | Generation: 82.7 t/s ]
+
+Exiting...

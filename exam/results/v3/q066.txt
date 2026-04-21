@@ -1,0 +1,100 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 InfiniteScroll component that loads more items when the user scrolls near the bottom. The <think> block must address: why scroll detection requires use_eval for DOM access in Dioxus, how to communicate scroll events back to Rust via dioxus.send() and eval.recv(), and how to manage the loading state signal correctly to prevent duplicate fetches.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: #[component] macro, use_signal for mutable state (items, loading), use_resource for async data fetching, rsx! with brace syntax only. The scroll detection uses JS eval via document::eval() to get window height and scroll position, which is the correct way in Dioxus 0.7 since DOM access isn't available through prelude or runtime without this pattern. The loading state signal prevents duplicate fetches by checking if already loading before starting a new resource load. No use_state, cx.render, or old patterns were used.
+
+[End thinking]
+
+// src/components/infinite_scroll.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct InfiniteScrollProps {
+    pub initial_items: Vec<String>,
+}
+
+#[component]
+pub fn InfiniteScroll(props: InfiniteScrollProps) -> Element {
+    let mut items = use_signal(|| props.initial_items.clone());
+    let mut loading = use_signal(|| false);
+    let mut page = use_signal(|| 1);
+
+    // Load initial data
+    let _ = use_resource(move || async move {
+        if !loading() && page() == 1 {
+            load_page(page()).await;
+        }
+        None
+    });
+
+    // Scroll detection using JS eval (Dioxus 0.7 pattern)
+    let _ = use_eval("window.addEventListener('scroll', () => { dioxus.send(window.scrollY); });");
+
+    // Handle scroll events via channel
+    let _ = use_resource(move || async move {
+        loop {
+            if let Some(scroll_y) = eval.recv::<i32>().await {
+                let window_height = document::eval("window.innerHeight").unwrap_or(0);
+                let scroll_position = scroll_y as f64;
+                let total_height = (window_height * 1.5).floor() as i32;
+
+                if scroll_position > total_height - 100 && !loading() {
+                    page += 1;
+                    loading.set(true);
+                    load_page(page()).await;
+                }
+            }
+        }
+    });
+
+    // Load data for a specific page
+    async fn load_page(page: i32) -> Vec<String> {
+        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+        (1..=page)
+            .map(|i| format!("Item {}", i))
+            .collect()
+    }
+
+    rsx! {
+        div {
+            class: "max-h-screen overflow-y-auto",
+            for item in items() {
+                div { key: "{item}", class: "p-4 border-b", "{item}" }
+            }
+            if loading() {
+                div { class: "text-center p-4", "Loading..." }
+            }
+        }
+    }
+}
+
+
+[ Prompt: 1757.4 t/s | Generation: 82.6 t/s ]
+
+Exiting...

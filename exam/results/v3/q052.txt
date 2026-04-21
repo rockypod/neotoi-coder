@@ -1,0 +1,136 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a paginated list. use_resource reads a page signal inside the async closure. Prev/next buttons update the signal. Derive total page count inline. aria_label on both buttons. aria_disabled derived inline. Three-arm match only.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7 patterns: `use_signal` for state, `use_resource` with reactive signal capture via closure, three-arm match on resource state, and inline list rendering. Avoided 0.6 patterns like `use_state`, `cx.render`, and function-call RSX syntax. Added WCAG attributes (`aria_label`, `aria_disabled`) as required.
+
+[End thinking]
+
+// src/components/paginated_list.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct PaginatedListProps {
+    initial_page: usize,
+}
+
+pub fn PaginatedList(props: PaginatedListProps) -> Element {
+    let mut page = use_signal(|| props.initial_page);
+    
+    // Read the current page signal inside the async closure to make it reactive
+    let data = use_resource(move || async move {
+        fetch_page(page()).await
+    });
+
+    rsx! {
+        div {
+            class: "flex flex-col items-center",
+            
+            match &*data.read_unchecked() {
+                None => rsx! { 
+                    div { class: "p-4", "Loading..." } 
+                },
+                
+                Some(Err(e)) => rsx! { 
+                    div { 
+                        class: "p-4 text-red-500",
+                        "Error: {e}" 
+                    } 
+                },
+                
+                Some(Ok(items)) => {
+                    let total_pages = (items.len() + 9) / 10; // Derive inline
+                    
+                    rsx! {
+                        div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6",
+                            items.into_iter().map(|item| rsx! {
+                                div { 
+                                    key: "{item.id}", 
+                                    class: "border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow",
+                                    h3 { class: "font-semibold text-gray-800", "{item.title}" }
+                                    p { class: "text-gray-600 text-sm", "{item.description}" }
+                                }
+                            })
+                        }
+
+                        div { 
+                            class: "flex justify-center space-x-4 mb-8",
+                            
+                            button {
+                                aria_label: "Previous page",
+                                aria_disabled: page() == 1,
+                                onclick: move |_| if page() > 1 { page -= 1; },
+                                class: "px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors",
+                                "Previous"
+                            }
+
+                            span {
+                                class: "text-gray-700 font-medium",
+                                "Page {page()} of {total_pages}"
+                            }
+
+                            button {
+                                aria_label: "Next page",
+                                aria_disabled: page() >= total_pages,
+                                onclick: move |_| if page() < total_pages { page += 1; },
+                                class: "px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors",
+                                "Next"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Mock data for demonstration
+#[derive(Clone, Debug)]
+struct Item {
+    id: usize,
+    title: String,
+    description: String,
+}
+
+async fn fetch_page(page: usize) -> Result<Vec<Item>, String> {
+    // Simulate async API call with page-dependent data
+    tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+    
+    let items = (1..=10).map(|i| Item {
+        id: i + (page - 1) * 10,
+        title: format!("Item {}", i),
+        description: "This is a sample item".to_string(),
+    }).collect();
+    
+    Ok(items)
+}
+
+
+[ Prompt: 1428.5 t/s | Generation: 82.4 t/s ]
+
+Exiting...

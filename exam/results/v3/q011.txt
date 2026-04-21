@@ -1,0 +1,56 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 StatusBadge component. Take a status: String prop. Use a match expression directly inside the class attribute: "active" → green, "inactive" → gray, "error" → red, _ → yellow. No intermediate variables.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+The code demonstrates Dioxus 0.7's inline Rust control flow in RSX with a match expression directly inside the class attribute as required by Rule 25. It uses Tailwind v4 utility classes for styling and follows WCAG 2.2 AAA guidelines with proper contrast colors (green-100, gray-100, red-100) and semantic text color (gray-800). The component properly handles all status variants including fallback cases with the underscore pattern. No intermediate variables are used for class calculation as per instruction constraints.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[component]
+pub fn StatusBadge(status: String) -> Element {
+    rsx! {
+        span {
+            // Inline match in class attribute - Dioxus 0.7 Rule 25
+            class: "px-3 py-1 rounded-full text-sm font-medium {match status.as_str() {
+                "active" => "bg-green-100 text-green-800",
+                "inactive" => "bg-gray-100 text-gray-800",
+                "error" => "bg-red-100 text-red-800",
+                _ => "bg-yellow-100 text-yellow-800"
+            }}",
+            // WCAG 2.2 AAA: proper contrast and semantic color
+            "{status}"
+        }
+    }
+}
+
+
+[ Prompt: 1447.7 t/s | Generation: 82.7 t/s ]
+
+Exiting...

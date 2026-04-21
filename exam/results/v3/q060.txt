@@ -1,0 +1,51 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 optimistic UI todo list. Adding shows item immediately as pending. use_resource POST confirms or rejects. On failure remove item and show role: "alert". One use_signal<Vec<TodoItem>> where each has is_pending: bool. The <think> block must address: race condition between optimistic insert and async response, and key instability when removing items.<|im_end|>
+<|im_start|>assistant
+
+
+|-[New LWP 30755]
+[New LWP 30754]
+[New LWP 30753]
+[New LWP 30748]
+[New LWP 30747]
+[New LWP 30746]
+[New LWP 30742]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+0x00007f042c317407 in wait4 () from /lib64/libc.so.6
+#0  0x00007f042c317407 in wait4 () from /lib64/libc.so.6
+#1  0x00007f04345710cb in ggml_print_backtrace () from /home/kevmille/AI_Training/llama.cpp/build/bin/libggml-base.so.0
+#2  0x00007f04345836d9 in ggml_uncaught_exception() () from /home/kevmille/AI_Training/llama.cpp/build/bin/libggml-base.so.0
+#3  0x00007f042c4bc0ec in __cxxabiv1::__terminate(void (*)()) () from /lib64/libstdc++.so.6
+#4  0x00007f042c4a5a39 in std::terminate() () from /lib64/libstdc++.so.6
+#5  0x00007f042c4bc378 in __cxa_throw () from /lib64/libstdc++.so.6
+#6  0x0000000000462f9e in common_chat_peg_parse(common_peg_arena const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, common_chat_parser_params const&) [clone .cold] ()
+#7  0x00000000005dc479 in common_chat_parse(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, common_chat_parser_params const&) ()
+#8  0x00000000004c3431 in task_result_state::update_chat_msg(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, std::vector<common_chat_msg_diff, std::allocator<common_chat_msg_diff> >&, bool) ()
+#9  0x00000000004c4b57 in server_task_result_cmpl_partial::update(task_result_state&) ()
+#10 0x000000000050d543 in server_response_reader::next(std::function<bool ()> const&) ()
+#11 0x00000000004bb35f in cli_context::generate_completion[abi:cxx11](result_timings&) ()
+#12 0x00000000004a200b in main ()
+\[Inferior 1 (process 30741) detached]
