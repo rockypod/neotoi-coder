@@ -29,11 +29,12 @@ ollama run rockypod/neotoi-coder "Write a Dioxus 0.7 counter with use_signal"
 Download `neotoi-coder-v3-q4_k_m_patched.gguf` from HuggingFace.
 See `integration/lm_studio.md` for prompt template setup.
 
-### Apple Silicon (mlx_lm) — MLX build coming in v3.1
+### Apple Silicon (mlx_lm)
 ```bash
 pip install mlx-lm
-mlx_lm server --model /path/to/neotoi-v3-mlx --port 8081
+mlx_lm.server --model rockypod/neotoi-coder --adapter-path mlx-v3 --port 8081
 ```
+Or download the `mlx-v3/` directory from HuggingFace and point `--model` at the local path.
 
 ### llama.cpp
 ```bash
