@@ -8,14 +8,13 @@ A Rust/Dioxus 0.7 specialist LLM — **94.81%** on a 103-question weighted exam.
 
 ## What's in this repo
 
-- `dataset/` — Full 4,880-example RAFT training dataset used for v3.1
 - `exam/` — Full 103-question weighted exam and scoring rubric
 - `exam/results/` — Per-question v3.1 model outputs for every Q1–Q103
 - `eval/` — Benchmark comparing Neotoi vs general models on Dioxus tasks
 - `integration/` — Setup guides for Continue.dev, LM Studio, Ollama, Zed
 
-Full transparency: dataset, exam questions, and per-question results are
-published here alongside the weights on HuggingFace.
+The 4,880-example RAFT training dataset is not published — only the
+exam, per-question outputs, and weights (on HuggingFace) are public.
 
 ## Quick Start
 
