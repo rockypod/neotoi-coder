@@ -1,0 +1,77 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 accessible tooltip. Trigger button has aria_describedby pointing to tooltip id unconditionally. Tooltip has role: "tooltip" and stable id. Tooltip always in DOM — show/hide via CSS class not DOM removal. Signal controls visibility class.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This code implements a Dioxus 0.7 accessible tooltip component following the golden rules. It uses `use_signal` for state management, with `is_visible` controlling visibility via CSS classes rather than conditional rendering in the DOM. The trigger button has `aria_describedby` pointing to the tooltip's stable ID unconditionally, which is required by ARIA standards. The tooltip element always exists in the DOM and has `role: "tooltip"` for proper accessibility semantics. It uses Tailwind's utility classes (`sr-only`) to control visibility via CSS rather than conditional rendering. The component follows Dioxus 0.7 patterns with `#[component]` macro, proper signal usage without `.clone()`, and correct event handling. No outdated 0.6 patterns like `use_state` or direct DOM manipulation are present.
+
+[End thinking]
+
+```rust
+// src/components/tooltip.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct TooltipProps {
+    pub trigger_text: String,
+    pub tooltip_content: String,
+}
+
+#[component]
+pub fn Tooltip(props: TooltipProps) -> Element {
+    let mut is_visible = use_signal(|| false);
+
+    rsx! {
+        div {
+            class: "relative inline-block",
+            
+            button {
+                aria_describedby: "tooltip-{props.tooltip_content}",
+                onclick: move |_| is_visible.set(!is_visible()),
+                class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300",
+                "{props.trigger_text}"
+            }
+            
+            div {
+                id: "tooltip-{props.tooltip_content}",
+                role: "tooltip",
+                class: if is_visible() { 
+                    "absolute z-10 px-3 py-2 text-sm bg-gray-800 text-white rounded shadow-lg" 
+                } else { 
+                    "sr-only"
+                },
+                
+                "{props.tooltip_content}"
+            }
+        }
+    }
+}
+```
+
+[ Prompt: 1477.6 t/s | Generation: 82.7 t/s ]
+
+Exiting...

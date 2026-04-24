@@ -1,0 +1,128 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 modal dialog. role: "dialog", aria_modal: "true", aria_labelledby pointing to modal title id. Close on Escape via onkeydown. Backdrop overlay. Conditionally rendered.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+~\src/components/modal.rs
+// src/components/modal.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct ModalProps {
+    pub is_open: bool,
+    pub title: String,
+    pub on_close: EventHandler<()>,
+}
+
+pub fn Modal(props: ModalProps) -> Element {
+    let mut is_open = use_signal(|| props.is_open);
+
+    // Close modal when Escape key is pressed
+    let handle_keydown = move |e: KeyboardEvent| {
+        if e.key() == "Escape" {
+            is_open.set(false);
+            props.on_close.call(());
+        }
+    };
+
+    // Handle backdrop click to close modal
+    let handle_backdrop_click = move |_| {
+        is_open.set(false);
+        props.on_close.call(();
+    };
+
+    rsx! {
+        if is_open() {
+            div {
+                class: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30",
+                // Backdrop overlay
+                div {
+                    class: "absolute inset-0 cursor-pointer",
+                    onclick: handle_backdrop_click,
+                }
+                // Modal dialog container
+                div {
+                    role: "dialog",
+                    aria_modal: "true",
+                    aria_labelledby: props.title.clone(),
+                    class: "relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-auto p-6",
+                    onkeydown: handle_keydown,
+                    // Modal title
+                    h2 {
+                        id: props.title.clone(),
+                        class: "text-xl font-semibold text-gray-900 dark:text-white mb-4",
+                        "{props.title}"
+                    }
+                    // Modal content goes here (children can be added by caller)
+                    {props.children}
+                }
+            }
+        }
+    }
+}
+
+// Example usage in a parent component
+#[component]
+pub fn ParentComponent() -> Element {
+    let mut is_modal_open = use_signal(|| false);
+
+    rsx! {
+        button {
+            onclick: move |_| is_modal_open.set(true),
+            "Open Modal"
+        }
+        Modal {
+            is_open: is_modal_open(),
+            title: "Modal Title".to_string(),
+            on_close: move |_| is_modal_open.set(false),
+            // Children can be added here
+        }
+    }
+}
+</think>
+~\src/main.rs
+use dioxus::prelude::*;
+
+mod components;
+use components::{Modal, ParentComponent};
+
+fn main() {
+    dioxus_web::launch(app);
+}
+
+pub fn app() -> Element {
+    rsx! {
+        div {
+            class: "p-4",
+            h1 { "Dioxus Modal Example" }
+            ParentComponent {}
+        }
+    }
+}
+
+[ Prompt: 1433.0 t/s | Generation: 82.2 t/s ]
+
+Exiting...

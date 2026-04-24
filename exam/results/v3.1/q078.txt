@@ -1,0 +1,56 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7.3 component using the native scoped CSS feature. Use the css!() macro to define scoped styles inline. Apply scoped class to a card div with title and body. Show the correct import. Expected pattern:
+```rust
+let styles = css!(".card { border: 1px solid #e2e8f0; }" ".card-title { font-weight: bold; }");
+rsx! { div { class: "{styles} card", h2 { class: "card-title", "{title}" } p { "{body}" } } }
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used Dioxus 0.7.3 scoped CSS with css!() macro as required. Created Card component that defines styles inline and applies them via class interpolation. Followed all golden rules: no cx.render, used rsx! directly, proper imports from dioxus::prelude, correct signal usage (though not needed here), and applied scoped classes properly. Rejected outdated 0.6 patterns like use_state with effect for async or image assets using ImageAssetOptions::new(). The component is self-contained and demonstrates the exact pattern requested.
+
+[End thinking]
+
+// src/components/card.rs
+use dioxus::prelude::*;
+
+pub fn Card(title: String, body: String) -> Element {
+    let styles = css!(".card { border: 1px solid #e2e8f0; padding: 1rem; }" 
+                    ".card-title { font-weight: bold; margin-bottom: 0.5rem; }");
+
+    rsx! {
+        div {
+            class: "{styles} card",
+            h2 { class: "card-title", "{title}" }
+            p { "{body}" }
+        }
+    }
+}
+
+[ Prompt: 2017.3 t/s | Generation: 82.6 t/s ]
+
+Exiting...

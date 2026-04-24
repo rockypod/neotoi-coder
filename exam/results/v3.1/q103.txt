@@ -1,0 +1,152 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7.3 server function that returns custom HTTP status codes on error. Show ServerFnError with status code integration. Client handles specific error variants differently in the three-arm match.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This example demonstrates Dioxus 0.7.3 server functions using the new #[server] macro and proper error handling with custom HTTP status codes. It shows how to define a server function that returns ServerFnError with specific status codes (401, 402) on different conditions. The client component uses a three-arm match to handle Ok, Err variants differently - one arm for unauthorized errors with special UI and another for payment required errors. The solution follows Dioxus 0.7's strict rules: no use_state, proper signal usage in async closures, correct imports from dioxus::prelude, and the new #[server] macro pattern without manual protocol specification.
+
+The key patterns used include:
+1. Server function with custom error handling using ServerFnError
+2. Three-arm match for error variants on client side (Ok, Err(ServerFnError::with_status(...)))
+3. Custom HTTP status codes in server errors
+4. Proper async closure usage with use_resource and signal updates
+
+Rejected outdated patterns from 0.6:
+- No more use_state + use_effect for data fetching
+- No manual protocol specification (default is JSON)
+- No dioxus_lib imports (using prelude directly)
+
+The solution shows proper error handling in both server and client layers, demonstrating the new capabilities of Dioxus 0.7's server functions.
+
+[End thinking]
+
+// src/lib.rs
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct User {
+    pub id: u32,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub enum ServerFnError {
+    #[serde(rename = "unauthorized")]
+    Unauthorized,
+    #[serde(rename = "payment_required")]
+    PaymentRequired,
+}
+
+impl ServerFnError {
+    pub fn with_status(&self) -> u16 {
+        match self {
+            Self::Unauthorized => 401,
+            Self::PaymentRequired => 402,
+        }
+    }
+}
+
+#[server]
+pub async fn get_user() -> Result<User, ServerFnError> {
+    // Simulate a database lookup
+    let user = User {
+        id: 1,
+        name: "Alice".to_string(),
+    };
+
+    // Simulate an error condition based on some logic (e.g., authentication)
+    if false { // Change to true to simulate unauthorized error
+        return Err(ServerFnError::Unauthorized);
+    }
+
+    Ok(user)
+}
+
+// src/components/user_view.rs
+use dioxus::prelude::*;
+use crate::{get_user, ServerFnError};
+
+#[derive(Props, Clone, PartialEq)]
+pub struct UserViewProps {
+    pub on_unauthorized: Option<EventHandler>,
+    pub on_payment_required: Option<EventHandler>,
+}
+
+pub fn UserView(props: UserViewProps) -> Element {
+    let user_resource = use_resource(|| async move {
+        get_user().await
+    });
+
+    rsx! {
+        match &*user_resource.read() {
+            Some(Ok(user)) => rsx! {
+                div { class: "p-4 bg-green-100 border-l-4 border-green-500",
+                    h2 { class: "text-xl font-bold text-green-800", "User Found" }
+                    p { class: "mt-2 text-gray-700", 
+                        "ID: ", strong { "{user.id}" },
+                        " Name: ", strong { "{user.name}" } }
+                }
+            },
+            Some(Err(error)) => {
+                match error {
+                    ServerFnError::Unauthorized => rsx! {
+                        div { class: "p-4 bg-red-100 border-l-4 border-red-500",
+                            h2 { class: "text-xl font-bold text-red-800", "Authentication Required" }
+                            p { class: "mt-2 text-gray-700", 
+                                "You need to log in to view this user." }
+                            if let Some(on_unauthorized) = &props.on_unauthorized {
+                                on_unauthorized.call(());
+                            }
+                        }
+                    },
+                    ServerFnError::PaymentRequired => rsx! {
+                        div { class: "p-4 bg-yellow-100 border-l-4 border-yellow-500",
+                            h2 { class: "text-xl font-bold text-yellow-800", "Payment Required" }
+                            p { class: "mt-2 text-gray-700", 
+                                "You need to pay for this feature." }
+                            if let Some(on_payment_required) = &props.on_payment_required {
+                                on_payment_required.call(());
+                            }
+                        }
+                    },
+                }
+            },
+            None => rsx! {
+                div { class: "p-4 bg-blue-100 border-l-4 border-blue-500",
+                    h2 { class: "text-xl font-bold text-blue-800", "Loading..." }
+                    p { class: "mt-2 text-gray-700", 
+                        "Fetching user data from the server." }
+                }
+            },
+        }
+    }
+}
+
+[ Prompt: 1316.4 t/s | Generation: 82.2 t/s ]
+
+Exiting...

@@ -1,0 +1,101 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a Dioxus 0.7 notification banner. role: "alert", aria_live: "assertive", aria_labelledby pointing to a real h2 id inside it. Close button with aria_label. Empty state uses rsx! {}. Conditionally rendered in DOM.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This solution implements a Dioxus 0.7 notification banner component that meets all the requirements:
+
+1. It uses `#[component]` macro as required for 0.7.
+2. The banner has proper ARIA attributes: `role="alert"`, `aria_live="assertive"` and points to a real heading with `id`.
+3. The close button includes `aria_label: "Close notification"`.
+4. Empty state uses `rsx! {}` as required, not containing whitespace-only content.
+5. It conditionally renders in DOM using Rust control flow (`if show_notification()`).
+6. No 0.6 patterns are used - no `cx.render`, no `use_state`, and proper signal usage.
+
+The component follows Dioxus 0.7's golden rules: uses signals for state, proper async handling with resources (though not needed here), correct imports from dioxus::prelude, and clean rendering using rsx! macro.
+
+[End thinking]
+
+```rust
+// src/components/notification_banner.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct NotificationBannerProps {
+    pub message: String,
+}
+
+#[component]
+pub fn NotificationBanner(props: NotificationBannerProps) -> Element {
+    let mut show_notification = use_signal(|| true);
+
+    rsx! {
+        if show_notification() {
+            div {
+                class: "bg-red-100 border-l-4 border-red-500 p-4",
+                role: "alert",
+                aria_live: "assertive",
+                aria_labelledby: "notification-title",
+                
+                h2 {
+                    id: "notification-title",
+                    class: "text-lg font-medium text-red-800",
+                    "Important Update"
+                }
+                
+                p { 
+                    class: "text-red-700", 
+                    "{props.message}" 
+                }
+                
+                button {
+                    aria_label: "Close notification",
+                    onclick: move |_| show_notification.set(false),
+                    class: "ml-auto text-red-500 hover:text-red-700 focus:outline-none",
+                    "×"
+                }
+            }
+        } else {
+            rsx! {}
+        }
+    }
+}
+```
+
+This implementation follows Dioxus 0.7's golden rules:
+1. Uses `#[component]` macro
+2. Properly typed props with `#[derive(Props, Clone, PartialEq)]`
+3. Uses signals for state (`use_signal`)
+4. Renders conditionally using Rust control flow in rsx!
+5. Includes all required ARIA attributes: role="alert", aria_live="assertive", and aria_labelledby pointing to a real heading
+6. Close button has `aria_label` as specified
+7. Empty state uses `rsx! {}`
+8. No 0.6 patterns like `cx.render`, `use_state`, or outdated async handling
+
+[ Prompt: 1518.5 t/s | Generation: 82.5 t/s ]
+
+Exiting...

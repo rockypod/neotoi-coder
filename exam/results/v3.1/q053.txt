@@ -1,0 +1,128 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a category selector that fetches items per category via use_resource. Resource reads category signal inside the closure. Three-arm match in RSX. Category buttons styled with match-in-class. No secondary signals.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This example demonstrates using `use_resource` to fetch data based on a reactive signal, which is a core concept in Dioxus 0.7. The component uses `#[component]` macro and follows the new pattern where state is managed with signals instead of use_state. It avoids outdated patterns like `use_router`, `cx.render`, or `use_effect` for async fetching. The three-arm match on resource reads directly in RSX handles loading, error, and success states without secondary signal synchronization. Category buttons are styled using inline match expressions within the class attribute to conditionally apply active state styles.
+
+[End thinking]
+
+// src/components/category_selector.rs
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct Item {
+    id: i32,
+    name: String,
+}
+
+#[component]
+pub fn CategorySelector() -> Element {
+    let mut selected_category = use_signal(|| "all".to_string());
+    
+    // Use resource to fetch items based on the reactive signal
+    let items_resource = use_resource(move || async move {
+        // Read the current category value inside the closure
+        let category = selected_category();
+        
+        // Simulate fetching from an API or database
+        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+        
+        // Return mock data based on category
+        match category.as_str() {
+            "all" => Ok(vec![
+                Item { id: 1, name: "Item 1".to_string() },
+                Item { id: 2, name: "Item 2".to_string() },
+                Item { id: 3, name: "Item 3".to_string() },
+            ]),
+            "electronics" => Ok(vec![
+                Item { id: 4, name: "Electronics 1".to_string() },
+                Item { id: 5, name: "Electronics 2".to_string() },
+            ]),
+            _ => Ok(vec![]),
+        }
+    });
+
+    rsx! {
+        div {
+            class: "p-4",
+            
+            // Category buttons with match-in-class for active state
+            div {
+                class: "flex space-x-2 mb-4",
+                
+                button {
+                    onclick: move |_| selected_category.set("all".to_string()),
+                    class: if selected_category() == "all" { 
+                        "bg-blue-500 text-white px-3 py-1 rounded" 
+                    } else { 
+                        "bg-gray-200 px-3 py-1 rounded hover:bg-gray-300" 
+                    },
+                    "All"
+                }
+                
+                button {
+                    onclick: move |_| selected_category.set("electronics".to_string()),
+                    class: if selected_category() == "electronics" { 
+                        "bg-blue-500 text-white px-3 py-1 rounded" 
+                    } else { 
+                        "bg-gray-200 px-3 py-1 rounded hover:bg-gray-300" 
+                    },
+                    "Electronics"
+                }
+            }
+
+            // Three-arm match in RSX for resource state
+            match &*items_resource.read_unchecked() {
+                None => rsx! { div { class: "text-center", "Loading..." } },
+                Some(Ok(items)) => rsx! {
+                    ul {
+                        class: "space-y-2",
+                        
+                        items.iter().map(|item| rsx! {
+                            li {
+                                key: "{item.id}",
+                                class: "p-2 border rounded",
+                                "{item.name}"
+                            }
+                        })
+                    }
+                },
+                Some(Err(_)) => rsx! { 
+                    div { 
+                        class: "text-center text-red-500", 
+                        "Error loading items" 
+                    } 
+                },
+            }
+        }
+    }
+}
+
+[ Prompt: 1280.9 t/s | Generation: 82.4 t/s ]
+
+Exiting...

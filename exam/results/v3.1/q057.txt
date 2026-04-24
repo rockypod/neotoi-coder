@@ -1,0 +1,102 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 component that uses use_resource with error retry. Three-arm match with Some(Err) showing a retry button that calls .restart() on the resource. Loading arm has role: "status". Success arm renders a list with stable keys.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This code implements a Dioxus 0.7 component using use_resource for data fetching, matching the three states (None, Some(Ok), Some(Err)) in RSX. The error state includes a retry button that calls .restart() on the resource to trigger re-fetching. It follows all golden rules: uses #[component] macro, proper signal usage without mut where not needed, stable keys for list items with key: attribute, and correct async pattern using use_resource. No outdated patterns like use_state or cx.render are present.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct Item {
+    id: i32,
+    name: String,
+}
+
+#[component]
+pub fn ErrorRetryExample() -> Element {
+    let data = use_resource(|| async move { fetch_items().await });
+
+    rsx! {
+        div {
+            class: "p-4",
+            match &*data.read_unchecked() {
+                None => rsx! {
+                    div {
+                        role: "status",
+                        class: "flex items-center justify-center p-8",
+                        span { class: "animate-spin", "Loading..." }
+                    }
+                },
+                Some(Ok(items)) => rsx! {
+                    ul {
+                        class: "space-y-2",
+                        items.iter().map(|item| rsx! {
+                            li {
+                                key: "{item.id}",
+                                class: "p-2 bg-gray-100 rounded",
+                                "{item.name}"
+                            }
+                        })
+                    }
+                },
+                Some(Err(e)) => rsx! {
+                    div {
+                        class: "flex flex-col items-center justify-center p-8",
+                        span { class: "text-red-500", "Failed to load data" }
+                        button {
+                            onclick: move |_| data.restart(),
+                            class: "mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+                            "Retry"
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+async fn fetch_items() -> Result<Vec<Item>, String> {
+    // Simulate API call
+    tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
+    
+    // Simulate occasional error
+    if rand::random::<bool>() {
+        Err("Network error".to_string())
+    } else {
+        Ok(vec![
+            Item { id: 1, name: "Item 1".to_string() },
+            Item { id: 2, name: "Item 2".to_string() },
+        ])
+    }
+}
+
+[ Prompt: 1495.7 t/s | Generation: 82.7 t/s ]
+
+Exiting...

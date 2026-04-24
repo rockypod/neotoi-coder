@@ -1,0 +1,50 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly:
+```html
+<figure class="mt-4">
+  <img src="/photo.jpg" alt="Team photo" width="800" height="600">
+  <figcaption class="text-sm text-gray-500">Our team at the 2025 summit.</figcaption>
+</figure>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+ ~
+Used `figure` and `figcaption` elements as required. Added explicit whitespace text node between them to preserve rendered spacing in HTML output, which is a common failure mode when converting RSX. The image has all attributes: `src`, `alt`, `width`, and `height`. Class attributes use Tailwind utility classes as specified.
+
+[End thinking]
+
+```rsx
+figure { class: "mt-4",
+  img { src: "/photo.jpg", alt: "Team photo", width: "800", height: "600" }
+  " "
+  figcaption { class: "text-sm text-gray-500", "Our team at the 2025 summit." }
+}
+```
+
+[ Prompt: 1650.2 t/s | Generation: 82.8 t/s ]
+
+Exiting...

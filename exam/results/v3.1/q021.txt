@@ -1,0 +1,48 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly:
+```html
+<details class="border rounded p-4">
+  <summary class="font-medium cursor-pointer">Show more</summary>
+  <p class="mt-2 text-gray-600">Additional content here.</p>
+</details>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used the exact HTML structure provided. Converted to Tailwind CSS with proper classes for styling (border, rounded, p-4). Maintained the same element hierarchy and class attributes as in the source HTML. No additional attributes or modifications added.
+
+[End thinking]
+
+```html
+<details class="border rounded p-4">
+  <summary class="font-medium cursor-pointer">Show more</summary>
+  <p class="mt-2 text-gray-600">Additional content here.</p>
+</details>
+
+[ Prompt: 1495.6 t/s | Generation: 82.8 t/s ]
+
+Exiting...

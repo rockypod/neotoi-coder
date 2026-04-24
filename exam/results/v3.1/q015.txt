@@ -1,0 +1,49 @@
+Loading model... |-\|/-\|/-\|/-\ 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly:
+```html
+<section aria-labelledby="section-title" class="py-8">
+  <h2 id="section-title" class="text-2xl font-bold">Latest <mark>Updates</mark></h2>
+  <p class="mt-2 text-gray-600">View the <a href="/changelog" class="underline text-blue-600">full changelog</a>.</p>
+</section>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used HTML conversion rules for section, h2 with id and aria-labelledby attributes. Converted mark element to strong as per rule 5 (mark → strong). Preserved all class attributes exactly. Maintained text content and href link structure without adding any extra classes or attributes not present in the source.
+
+[End thinking]
+
+```html
+<section aria-labelledby="section-title" class="py-8">
+  <h2 id="section-title" class="text-2xl font-bold">Latest <strong>Updates</strong></h2>
+  <p class="mt-2 text-gray-600">View the <a href="/changelog" class="underline text-blue-600">full changelog</a>.</p>
+</section>
+```
+
+[ Prompt: 1892.8 t/s | Generation: 82.9 t/s ]
+
+Exiting...

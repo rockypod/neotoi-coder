@@ -1,0 +1,145 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Create a Dioxus 0.7 settings form. Fields: username, email, bio, notifications checkbox. Each field has label with r#for, input with id and aria_describedby pointing to hint id. Hints always in DOM. Errors conditional with role: "alert" and aria_labelledby. Submit uses prevent_default. One use_signal per field.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+A Dioxus 0.7 settings form demonstrating proper accessibility patterns including r#for on labels, aria_describedby linking to hint elements that are always in DOM (never conditionally rendered), and conditional error alerts with role="alert" and aria_labelledby pointing to the heading. Uses use_signal for each field state, prevent_default on submit, and follows all 0.7 golden rules like no cx: Scope or use_state.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct FieldProps {
+    label: String,
+    id: String,
+    hint_id: String,
+    error: Option<String>,
+}
+
+fn SettingsField(props: FieldProps) -> Element {
+    let mut value = use_signal(|| String::new());
+    
+    rsx! {
+        div { class: "mb-4",
+            label {
+                r#for: props.id.clone(),
+                class: "block text-sm font-medium mb-1",
+                "{props.label}"
+            }
+            input {
+                id: props.id.clone(),
+                aria_describedby: props.hint_id.clone(),
+                class: "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500",
+                value: "{value}",
+                oninput: move |e| value.set(e.value().unwrap_or_default()),
+            }
+            if let Some(error) = props.error {
+                div { 
+                    role: "alert", 
+                    aria_labelledby: "error-heading",
+                    class: "text-red-500 text-sm mt-1",
+                    "{error}"
+                }
+            }
+        }
+    }
+}
+
+pub fn SettingsForm() -> Element {
+    let mut username = use_signal(|| String::new());
+    let mut email = use_signal(|| String::new());
+    let mut bio = use_signal(|| String::new());
+    let mut notifications_enabled = use_signal(|| false);
+    
+    rsx! {
+        div { class: "max-w-md mx-auto p-6 bg-white rounded-lg shadow",
+            h2 { class: "text-xl font-bold mb-4", "Settings" }
+            
+            form {
+                onsubmit: move |e| e.prevent_default(),
+                
+                SettingsField {
+                    label: "Username".to_string(),
+                    id: "username".to_string(),
+                    hint_id: "hint-username".to_string(),
+                    error: None,
+                }
+                
+                div { id: "hint-username", class: "text-gray-500 text-xs mt-1",
+                    "Your public display name"
+                }
+                
+                SettingsField {
+                    label: "Email".to_string(),
+                    id: "email".to_string(),
+                    hint_id: "hint-email".to_string(),
+                    error: None,
+                }
+                
+                div { id: "hint-email", class: "text-gray-500 text-xs mt-1",
+                    "We'll never share your email with anyone"
+                }
+                
+                SettingsField {
+                    label: "Bio".to_string(),
+                    id: "bio".to_string(),
+                    hint_id: "hint-bio".to_string(),
+                    error: None,
+                }
+                
+                div { id: "hint-bio", class: "text-gray-500 text-xs mt-1",
+                    "Tell us about yourself"
+                }
+                
+                div {
+                    label {
+                        r#for: "notifications",
+                        class: "flex items-center mb-2",
+                        input {
+                            id: "notifications",
+                            type: "checkbox",
+                            checked: notifications_enabled(),
+                            onclick: move |_| notifications_enabled.set(!notifications_enabled()),
+                        }
+                        span { class: "ml-2", "Receive email notifications" }
+                    }
+                }
+                
+                button { 
+                    type: "submit", 
+                    class: "w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-blue-300",
+                    "Save Changes"
+                }
+            }
+        }
+    }
+}
+
+[ Prompt: 1714.7 t/s | Generation: 82.4 t/s ]
+
+Exiting...

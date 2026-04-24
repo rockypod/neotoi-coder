@@ -1,0 +1,49 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Convert this exactly — preserve all attributes and nesting:
+```html
+<div role="alert" aria-labelledby="error-title" class="rounded border border-red-300 p-4">
+  <h2 id="error-title" class="font-semibold text-red-700">Error</h2>
+  <p class="text-red-600">Something went wrong. Please try again.</p>
+</div>
+```<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+Used the exact HTML structure provided, preserving all attributes and nesting. The component renders a red alert box with proper accessibility labels (role="alert", aria-labelledby) and matching class names from Tailwind CSS. No extra attributes or classes were added beyond what was specified in the source HTML.
+
+[End thinking]
+
+```html
+<div role="alert" aria-labelledby="error-title" class="rounded border border-red-300 p-4">
+  <h2 id="error-title" class="font-semibold text-red-700">Error</h2>
+  <p class="text-red-600">Something went wrong. Please try again.</p>
+</div>
+```
+
+[ Prompt: 1839.0 t/s | Generation: 82.7 t/s ]
+
+Exiting...

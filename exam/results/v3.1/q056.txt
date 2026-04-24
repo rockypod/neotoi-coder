@@ -1,0 +1,102 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Build a use_resource that fetches data only when a use_signal<bool> is true. Show a placeholder when false. Three-arm match when resource is active. Trigger button toggles the signal. No secondary signals.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+
+This solution implements a `use_resource` pattern that fetches user data conditionally based on a boolean signal. The key rule applied is #27: "use_resource RENDER PATTERN" - matching resource state directly in RSX without syncing to secondary signals. It uses the correct three-arm match pattern (None, Some(Ok), Some(Err)) as required by #27. The toggle button properly updates the signal using `set()` method on use_signal<bool> per rule #23. No secondary signals are created - the resource state is managed entirely through the single boolean signal and direct matching in RSX. The placeholder div with "Data not available" appears when the signal is false, satisfying requirement #1. This follows all relevant golden rules including proper async handling with use_resource (rule 27), correct signal usage patterns (rules 23-26), and proper rendering without secondary state management.
+
+[End thinking]
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+struct User {
+    id: i32,
+    name: String,
+}
+
+pub fn ConditionalFetch() -> Element {
+    let mut show_data = use_signal(|| false);
+    
+    // Rule 27: Directly match resource state in RSX - no secondary signals
+    let user_resource = use_resource(move || async move {
+        if *show_data.read() {
+            // Simulate fetching data
+            tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+            Ok::<User, String>(User { id: 1, name: "John Doe".to_string() })
+        } else {
+            Err("Data not available".to_string())
+        }
+    });
+
+    rsx! {
+        div {
+            class: "p-4",
+            
+            // Rule 27: Three-arm match for resource state
+            match &*user_resource.read_unchecked() {
+                None => rsx! { 
+                    div { 
+                        class: "text-gray-500", 
+                        "Loading..." 
+                    } 
+                },
+                
+                Some(Ok(user)) => rsx! { 
+                    div { 
+                        class: "border p-4 rounded",
+                        h2 { "User Details" }
+                        p { "ID: {user.id}" }
+                        p { "Name: {user.name}" }
+                    } 
+                },
+                
+                Some(Err(error)) => rsx! { 
+                    div { 
+                        class: "text-red-500", 
+                        error 
+                    } 
+                },
+            }
+
+            // Rule 23: Button toggles signal using set() method
+            button {
+                onclick: move |_| show_data.set(!show_data()),
+                class: "mt-4 px-4 py-2 bg-blue-500 text-white rounded",
+                if *show_data.read() { 
+                    "Hide Data" 
+                } else { 
+                    "Show Data" 
+                }
+            }
+        }
+    }
+}
+
+[ Prompt: 1343.4 t/s | Generation: 82.6 t/s ]
+
+Exiting...

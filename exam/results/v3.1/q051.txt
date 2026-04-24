@@ -1,0 +1,87 @@
+Loading model... |-\|/-\|/-\|/- 
+
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b8323-57819b8d4
+model      : neotoi-coder-v3.1-q4_k_m_patched.gguf
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read               add a text file
+
+
+> <|im_start|>user
+Fetch a list of posts from /api/posts using use_resource and reqwest. Three-arm match in RSX: None spinner with role: "status" and aria_label, Some(Err) error div with role: "alert" and aria_labelledby pointing to heading id, Some(Ok) list with stable keys. No .ok() wrapper.<|im_end|>
+<|im_start|>assistant
+
+
+| [Start thinking]
+ RUST
+// src/components/post_list.rs
+use dioxus::prelude::*;
+use reqwest;
+
+#[derive(Props, Clone, PartialEq)]
+struct Post {
+    id: u32,
+    title: String,
+}
+
+#[component]
+pub fn PostList() -> Element {
+    let posts = use_resource(|| async move {
+        reqwest::get("/api/posts")
+            .await?
+            .json::<Vec<Post>>()
+            .await
+    });
+
+    rsx! {
+        match &*posts.read_unchecked() {
+            None => rsx! {
+                div(role: "status", aria_label: "Loading posts...") {
+                    Spinner {}
+                }
+            },
+            Some(Err(e)) => rsx! {
+                div(role: "alert", aria_labelledby: "err-heading") {
+                    h2(id: "err-heading", class: "text-lg font-semibold text-red-600") { "Error" }
+                    p(class: "mt-1 text-sm text-gray-500") { "{e}" }
+                }
+            },
+            Some(Ok(data)) => rsx! {
+                ul(role: "list") {
+                    r#for: "post-{item.id}" in data.iter().map(|item| rsx! {
+                        li(key: "{item.id}", class: "py-2 border-b last:border-b-0") {
+                            a(href: "/posts/{item.id}", class: "text-blue-600 hover:text-blue-800") { "{item.title}" }
+                        }
+                    })
+                }
+            },
+        }
+    }
+}
+
+// src/components/spinner.rs
+use dioxus::prelude::*;
+
+#[component]
+pub fn Spinner() -> Element {
+    rsx! {
+        div(class: "animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500") {}
+    }
+}
+
+[ Prompt: 1670.4 t/s | Generation: 82.3 t/s ]
+
+Exiting...
