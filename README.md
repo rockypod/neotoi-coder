@@ -4,17 +4,17 @@ A Rust / Dioxus 0.7 specialist LLM. v3.1 ships in **three sizes** —
 8B, 4B, and 14B — all fine-tuned via RAFT (Retrieval-Augmented
 Fine-Tuning) on Qwen3 base models.
 
-| Variant | Base | Params | Q4_K_M | Spec exam (104Q weighted, max 144.5) |
-|---|---|---|---|---|
-| **8B** (flagship) | Qwen3-8B | 8.2B (6.95B non-embed) | 4.68 GB | **144.5 / 144.5 — 100.00%** |
-| 4B | Qwen3-4B | 4.0B (3.6B non-embed, tied) | 2.33 GB | 143.5 / 144.5 — 99.31% |
-| 14B (legacy) | Qwen3-Coder-14B | 14.8B (13.2B non-embed) | 8.40 GB | 137.0 / 144.5 — 94.81% |
+| Variant | Base | Params | Q4_K_M | Spec exam (104Q weighted, max 144.5) | HF repo |
+|---|---|---|---|---|---|
+| **8B** (flagship) | Qwen3-8B | 8.2B (6.95B non-embed) | 4.68 GB | **144.5 / 144.5 — 100.00%** | [`rockypod/neotoi-coder-8b`](https://huggingface.co/rockypod/neotoi-coder-8b) |
+| 4B | Qwen3-4B | 4.0B (3.6B non-embed, tied) | 2.33 GB | 143.5 / 144.5 — 99.31% | [`rockypod/neotoi-coder-4b`](https://huggingface.co/rockypod/neotoi-coder-4b) |
+| 14B (legacy) | Qwen3-Coder-14B | 14.8B (13.2B non-embed) | 8.40 GB | 137.0 / 144.5 — 94.81% | [`rockypod/neotoi-coder`](https://huggingface.co/rockypod/neotoi-coder) (family hub) |
 
 All three clear the 90% publication bar and the 95% release bar with
 all per-tier floors PASS. The 8B is the recommended default; pick the
 4B if disk / RAM is tight, pick the 14B for the broadest coverage.
 
-**[HuggingFace — Download GGUFs](https://huggingface.co/rockypod/neotoi-coder)**
+**HuggingFace:** [8B](https://huggingface.co/rockypod/neotoi-coder-8b) · [4B](https://huggingface.co/rockypod/neotoi-coder-4b) · [14B / family hub](https://huggingface.co/rockypod/neotoi-coder)
 &nbsp; · &nbsp; **[Install via Ollama](https://ollama.com/rockypod/neotoi-coder)**
 &nbsp; · &nbsp; **[Read the whole story on RockyPod.com →](https://rockypod.com/blog/neotoi-coder-v2-release)**
 
@@ -50,11 +50,11 @@ Tags: `:8b`, `:4b`, `:15b`. Each Modelfile sets `num_ctx 8192`, `temperature 0.2
 
 ### LM Studio
 
-Download the appropriate Q4_K_M GGUF from HuggingFace:
+Download the appropriate Q4_K_M GGUF from its dedicated HuggingFace repo:
 
-- 8B → `neotoi-coder-v3.1-8b-q4_k_m_patched.gguf` (4.68 GB) on the [`v3.1.0-8b` branch](https://huggingface.co/rockypod/neotoi-coder/tree/v3.1.0-8b)
-- 4B → `neotoi-coder-v3.1-4b-q4_k_m_patched.gguf` (2.33 GB) on the [`v3.1.0-4b` branch](https://huggingface.co/rockypod/neotoi-coder/tree/v3.1.0-4b)
-- 14B → `neotoi-coder-v3.1-q4_k_m_patched.gguf` (8.40 GB) on the main branch
+- 8B → `neotoi-coder-v3.1-8b-q4_k_m_patched.gguf` (4.68 GB) at [`rockypod/neotoi-coder-8b`](https://huggingface.co/rockypod/neotoi-coder-8b)
+- 4B → `neotoi-coder-v3.1-4b-q4_k_m_patched.gguf` (2.33 GB) at [`rockypod/neotoi-coder-4b`](https://huggingface.co/rockypod/neotoi-coder-4b)
+- 14B → `neotoi-coder-v3.1-q4_k_m.gguf` (8.40 GB) at [`rockypod/neotoi-coder`](https://huggingface.co/rockypod/neotoi-coder) (family hub also hosts the 14B GGUFs)
 
 See `integration/lm_studio.md` for prompt-template setup.
 
