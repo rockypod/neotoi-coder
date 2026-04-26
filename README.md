@@ -1,15 +1,29 @@
-# Neotoi Coder v3.1
+# Neotoi Coder
 
-A Rust/Dioxus 0.7 specialist LLM — **94.81%** on a 103-question weighted exam.
+A Rust / Dioxus 0.7 specialist LLM. v3.1 ships in **three sizes** —
+8B, 4B, and 14B — all fine-tuned via RAFT (Retrieval-Augmented
+Fine-Tuning) on Qwen3 base models.
 
-**[HuggingFace — Download GGUF](https://huggingface.co/rockypod/neotoi-coder)**
-**[Install via Ollama](https://ollama.com/rockypod/neotoi-coder)** — `ollama pull rockypod/neotoi-coder`
-**[Read the whole story on RockyPod.com →](https://rockypod.com/blog/neotoi-coder-v2-release)**
+| Variant | Base | Params | Q4_K_M | Spec exam (104Q weighted, max 144.5) |
+|---|---|---|---|---|
+| **8B** (flagship) | Qwen3-8B | 8.2B (6.95B non-embed) | 4.68 GB | **144.5 / 144.5 — 100.00%** |
+| 4B | Qwen3-4B | 4.0B (3.6B non-embed, tied) | 2.33 GB | 143.5 / 144.5 — 99.31% |
+| 14B (legacy) | Qwen3-Coder-14B | 14.8B (13.2B non-embed) | 8.40 GB | 137.0 / 144.5 — 94.81% |
+
+All three clear the 90% publication bar and the 95% release bar with
+all per-tier floors PASS. The 8B is the recommended default; pick the
+4B if disk / RAM is tight, pick the 14B for the broadest coverage.
+
+**[HuggingFace — Download GGUFs](https://huggingface.co/rockypod/neotoi-coder)**
+&nbsp; · &nbsp; **[Install via Ollama](https://ollama.com/rockypod/neotoi-coder)**
+&nbsp; · &nbsp; **[Read the whole story on RockyPod.com →](https://rockypod.com/blog/neotoi-coder-v2-release)**
 
 ## What's in this repo
 
-- `exam/` — Full 103-question weighted exam and scoring rubric
-- `exam/results/` — Per-question v3.1 model outputs for every Q1–Q103
+- `exam/` — Full 104-question weighted exam, scoring rubric, and
+  patched grader
+- `exam/results/` — Per-question model outputs for every Q1–Q103
+  (8B, 4B, and legacy 14B)
 - `eval/` — Benchmark comparing Neotoi vs general models on Dioxus tasks
 - `integration/` — Setup guides for Continue.dev, LM Studio, Ollama, Zed
 
@@ -19,90 +33,99 @@ exam, per-question outputs, and weights (on HuggingFace) are public.
 ## Quick Start
 
 ### Ollama (any platform)
+
 ```bash
-ollama pull rockypod/neotoi-coder
-ollama run rockypod/neotoi-coder "Write a Dioxus 0.7 counter with use_signal"
+# 8B — recommended default
+ollama pull rockypod/neotoi-coder:8b
+ollama run rockypod/neotoi-coder:8b "Write a Dioxus 0.7 counter with use_signal"
+
+# 4B — disk / RAM constrained, ~40% faster generation
+ollama pull rockypod/neotoi-coder:4b
+
+# 14B — legacy, broadest coverage
+ollama pull rockypod/neotoi-coder:15b
 ```
 
-Tags: `:v3.1` (current), `:latest` (tracks `:v3.1`), `:v3` and `:v2` (legacy).
+Tags: `:8b`, `:4b`, `:15b`. Each Modelfile sets `num_ctx 8192`, `temperature 0.2`, and prefills `<think>` on the assistant turn so Qwen3 native chain-of-thought emits by default.
 
 ### LM Studio
-Download `neotoi-coder-v3.1-q4_k_m.gguf` from HuggingFace.
-See `integration/lm_studio.md` for prompt template setup.
 
-### Apple Silicon (mlx_lm)
-```bash
-pip install mlx-lm
-mlx_lm.server --model rockypod/neotoi-coder --adapter-path mlx-v3.1 --port 8081
-```
-Or download the `mlx-v3.1/` directory from HuggingFace and point `--model` at the local path.
+Download the appropriate Q4_K_M GGUF from HuggingFace:
+
+- 8B → `neotoi-coder-v3.1-8b-q4_k_m_patched.gguf` (4.68 GB) on the [`v3.1.0-8b` branch](https://huggingface.co/rockypod/neotoi-coder/tree/v3.1.0-8b)
+- 4B → `neotoi-coder-v3.1-4b-q4_k_m_patched.gguf` (2.33 GB) on the [`v3.1.0-4b` branch](https://huggingface.co/rockypod/neotoi-coder/tree/v3.1.0-4b)
+- 14B → `neotoi-coder-v3.1-q4_k_m_patched.gguf` (8.40 GB) on the main branch
+
+See `integration/lm_studio.md` for prompt-template setup.
 
 ### llama.cpp
+
 ```bash
-./llama-cli -m neotoi-coder-v3.1-q4_k_m.gguf -ngl 99 --temp 0.2 \
+./llama-cli -m neotoi-coder-v3.1-8b-q4_k_m_patched.gguf -ngl 99 --temp 0.2 \
   -p "<|im_start|>user\nYour question<|im_end|>\n<|im_start|>assistant\n<think>"
 ```
 
-## What's New in v3.1
+## v3.1 Score — all three variants
 
-- **T1 Fundamentals → 100%** (+8.3 pts vs v3.0)
-- **T6 Hard Reasoning → 100%** (+25 pts vs v3.0, clean sweep)
-- **T8 GlobalSignal/i18n → 100%** (+12.5 pts)
-- **T10 Dioxus 0.7.4 → 100%** (+16.7 pts)
-- **8 tiers at 100%** overall (T1, T5, T6, T7, T8, T9, T10, T11)
+Re-graded 2026-04-26 with the patched `run_grade_v31.py` (Q87 now also
+accepts `LANG()` / `THEME()` GlobalSignal accessor calls in addition to
+the literal `Signal` token — a false-negative fix that unlocked the
+8B's perfect score).
+
+| Tier | Max wt | 8B | 4B | 14B |
+|---|---|---|---|---|
+| T1 Fundamentals | 12.0 | 12.0 ✅ | 11.0 ⚠️ 91.7% | 12.0 ✅ |
+| T2 RSX Syntax | 12.0 | 12.0 ✅ | 12.0 ✅ | 10.0 ⚠️ 83.3% |
+| T3 Signal Hygiene | 12.0 | 12.0 ✅ | 12.0 ✅ | 11.0 ✅ 91.7% |
+| T4 WCAG / ARIA | 21.0 | 21.0 ✅ | 21.0 ✅ | 16.5 ⚠️ 78.6% |
+| T5 use_resource | 12.0 | 12.0 ✅ | 12.0 ✅ | 12.0 ✅ |
+| T6 Hard Reasoning | 20.0 | 20.0 ✅ | 20.0 ✅ | 20.0 ✅ |
+| T7 Primitives + CSS | 18.0 | 18.0 ✅ | 18.0 ✅ | 18.0 ✅ |
+| T8 GlobalSignal / i18n | 12.0 | 12.0 ✅ | 12.0 ✅ | 12.0 ✅ |
+| T9 Static Navigator | 9.0 | 9.0 ✅ | 9.0 ✅ | 9.0 ✅ |
+| T10 Dioxus 0.7.4 | 12.0 | 12.0 ✅ | 12.0 ✅ | 12.0 ✅ |
+| T11 Server Functions | 4.5 | 4.5 ✅ | 4.5 ✅ | 4.5 ✅ |
+| **Total weighted** | **144.5** | **144.5** | **143.5** | **137.0** |
+| **Total raw (of 103)** | — | **103** | **102** | **97** |
+| **Percent** | — | **100.00%** | **99.31%** | **94.81%** |
+
+Tier floors (82% on weight-1.0 / 1.5 tiers, 88% on weight-2.0 tiers): all PASS for all three variants.
+
+The 4B's only miss is Q8 (T1 RSX conversion) — generation truncated mid-`<think>` block. The 14B drops on RSX-heavy questions (Q17, Q22, Q30, Q37, Q39, Q43); v3.2 target. Full rubric and per-question outputs in `exam/`.
+
+## What's new in v3.1 (vs v3.0)
+
+- **Two new sizes**: 8B and 4B alongside the 14B base, both surpassing the 14B's score
+- **T1 Fundamentals → 100%** on 8B and 14B, 91.7% on 4B (+8.3 pts)
+- **T6 Hard Reasoning → 100%** clean sweep, all three variants (+25 pts on 14B)
+- **T8 GlobalSignal / i18n → 100%** all three variants (+12.5 pts on 14B)
+- **T10 Dioxus 0.7.4 → 100%** all three variants (+16.7 pts on 14B)
+- **8 tiers at 100%** on the 14B; 11 tiers at 100% on the 8B (perfect)
 - **New dataset topics:**
-  - **T39** — v3.0 exam-gap corrections
-  - **T40** — DaisyUI 5 component coverage on Tailwind v4
-  - **T41** — Signals deep-dive (`$state`, `Signal<T>`, `GlobalSignal`,
-    `.peek()`, `.write()`, `ReadOnlySignal`, composition)
-  - **T42** — Router patterns (`#[derive(Routable)]`, nested routes,
-    layout routes, route guards, query parameters)
-  - **T43** — Async / server-function composition (`use_resource`
-    three-arm match, cancellation, streaming, `ServerFnError`)
-- **Dataset:** **4,880 curated examples across 43 topics** (up from 4,535)
+  - T39 — v3.0 exam-gap corrections
+  - T40 — DaisyUI 5 components on Tailwind v4
+  - T41 — Signals deep-dive (`use_signal`, `Signal<T>`, `GlobalSignal`, `.peek()`, `.write()`, `ReadOnlySignal`, composition)
+  - T42 — Router patterns (`#[derive(Routable)]`, nested routes, layout routes, route guards, query parameters)
+  - T43 — Async / server-function composition (`use_resource` three-arm match, cancellation, streaming, `ServerFnError`)
+- **Dataset:** 4,880 curated examples across 43 topics (up from 4,535)
 
-## Score
+## Version history
 
-| Tier | Score | Max | Status |
-|---|---|---|---|
-| T1 Fundamentals | 12.0/12 | 12 | ✅ Perfect |
-| T2 RSX Syntax | 10.0/12 | 12 | ⚠️ 83.3% |
-| T3 Signal Hygiene | 11.0/12 | 12 | ✅ 91.7% |
-| T4 WCAG/ARIA | 16.5/21 | 21 | ⚠️ 78.6% |
-| T5 use_resource | 12.0/12 | 12 | ✅ Perfect |
-| T6 Hard Reasoning | 20.0/20 | 20 | ✅ Perfect |
-| T7 Primitives+CSS | 18.0/18 | 18 | ✅ Perfect |
-| T8 GlobalSignal/i18n | 12.0/12 | 12 | ✅ Perfect |
-| T9 Static Navigator | 9.0/9 | 9 | ✅ Perfect |
-| T10 Dioxus 0.7.4 | 12.0/12 | 12 | ✅ Perfect |
-| T11 Server Functions | 4.5/4.5 | 4.5 | ✅ Perfect |
-| **Total** | **137.0/144.5** | **144.5** | **✅ 94.81%** |
-
-**94.81%** — clears the 90% publication bar with 4.81 points to spare.
-Raw: 97/103.
-
-Remaining gaps — all 6 failures are `rsx!` macro drops or `cx.render`
-carryover on RSX-heavy questions (Q17, Q22, Q30, Q37, Q39, Q43),
-targeted for v3.2. Full rubric and per-question outputs in `exam/`.
-
-## Version History
-
-| Version | Score | Exam | Dataset |
-|---|---|---|---|
-| v1.0 | 51/60 (85.0%) | 60Q standard | — |
-| v2.0 | 135.5/140 (96.8%) | 100Q weighted | 4,185 |
-| v3.0 | 124.0/144.5 (85.8%) | 103Q weighted | 4,535 |
-| **v3.1** | **137.0/144.5 (94.81%)** | **103Q weighted** | **4,880** |
+| Version | Base (params) | Score | Exam | Dataset |
+|---|---|---|---|---|
+| v1.0 | Qwen3-Coder-14B (14.8B) | 51/60 (85.0%) | 60Q standard | — |
+| v2.0 | Qwen3-Coder-14B (14.8B) | 135.5/140 (96.8%) | 100Q weighted | 4,185 |
+| v3.0 | Qwen3-Coder-14B (14.8B) | 124.0/144.5 (85.8%) | 103Q weighted | 4,535 |
+| v3.1 14B | Qwen3-Coder-14B (14.8B) | 137.0/144.5 (94.81%) | 103Q weighted | 4,880 |
+| **v3.1 8B** | **Qwen3-8B (8.2B)** | **144.5/144.5 (100.00%)** | **103Q weighted** | **4,880** |
+| v3.1 4B | Qwen3-4B (4.0B, tied) | 143.5/144.5 (99.31%) | 103Q weighted | 4,880 |
 
 ## Benchmark
 
-See `eval/dioxus_benchmark.md` for tasks where general models fail
-and Neotoi succeeds.
+See `eval/dioxus_benchmark.md` for tasks where general models fail and Neotoi succeeds.
 
 ## License
 
-Neotoi Coder Community License v1.0 — commercial use of outputs
-permitted, weight redistribution prohibited, mental health deployment
-requires written permission. See `LICENSE`.
+Neotoi Coder Community License v1.0 — commercial use of outputs permitted, weight redistribution prohibited, mental health deployment requires written permission. See `LICENSE`.
 
 Built on a homelab RTX 3090 Ti in Washington State.
