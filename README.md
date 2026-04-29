@@ -20,15 +20,12 @@ all per-tier floors PASS. The 8B is the recommended default; pick the
 
 ## What's in this repo
 
-- `exam/` — Full 104-question weighted exam, scoring rubric, and
-  patched grader
-- `exam/results/` — Per-question model outputs for every Q1–Q103
-  (8B, 4B, and legacy 14B)
-- `eval/` — Benchmark comparing Neotoi vs general models on Dioxus tasks
 - `integration/` — Setup guides for Continue.dev, LM Studio, Ollama, Zed
 
-The 4,880-example RAFT training dataset is not published — only the
-exam, per-question outputs, and weights (on HuggingFace) are public.
+The 4,880-example RAFT training dataset and the 104-question spec exam
+are not published — only the integration guides and the model weights
+(on HuggingFace) are public. Exam scorecards stay in this README so
+you can compare variants without seeing the questions.
 
 ## Quick Start
 
@@ -91,7 +88,7 @@ the literal `Signal` token — a false-negative fix that unlocked the
 
 Tier floors (82% on weight-1.0 / 1.5 tiers, 88% on weight-2.0 tiers): all PASS for all three variants.
 
-The 4B's only miss is Q8 (T1 RSX conversion) — generation truncated mid-`<think>` block. The 14B drops on RSX-heavy questions (Q17, Q22, Q30, Q37, Q39, Q43); v3.2 target. Full rubric and per-question outputs in `exam/`.
+The 4B's only miss is Q8 (T1 RSX conversion) — generation truncated mid-`<think>` block. The 14B drops on RSX-heavy questions (Q17, Q22, Q30, Q37, Q39, Q43); v3.2 target.
 
 ## What's new in v3.1 (vs v3.0)
 
@@ -119,10 +116,6 @@ The 4B's only miss is Q8 (T1 RSX conversion) — generation truncated mid-`<thin
 | v3.1 14B | Qwen3-Coder-14B (14.8B) | 137.0/144.5 (94.81%) | 103Q weighted | 4,880 |
 | **v3.1 8B** | **Qwen3-8B (8.2B)** | **144.5/144.5 (100.00%)** | **103Q weighted** | **4,880** |
 | v3.1 4B | Qwen3-4B (4.0B, tied) | 143.5/144.5 (99.31%) | 103Q weighted | 4,880 |
-
-## Benchmark
-
-See `eval/dioxus_benchmark.md` for tasks where general models fail and Neotoi succeeds.
 
 ## License
 
